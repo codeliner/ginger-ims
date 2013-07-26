@@ -1,0 +1,28 @@
+<div class="well well-small"><%= $CL.translate('FEATURES::INFO::CHOOSE_ERROR_BEHAVIOR') %></div>
+<div class="row-fluid margin-bottom10">
+    <div class="span6">
+        <label for="validator-error-handling">
+            <input type="radio" name="validator-error-handling" value="break"
+                    <% if (!options.validatorErrorHandling || options.validatorErrorHandling == "break") { %>
+                    checked="checked"
+                    <% } %>
+                  /><span class="label"><%= $CL.translate('VALIDATORS::ERROR_HANDLING::BREAK') %></span>
+        </label>
+        <label for="validator-error-handling">
+            <input type="radio" name="validator-error-handling" value="skip"
+                    <% if (options.validatorErrorHandling && options.validatorErrorHandling == "skip") { %>
+                    checked="checked"
+                    <% } %>
+                  /><span class="label"><%= $CL.translate('VALIDATORS::ERROR_HANDLING::SKIP') %></span>
+        </label>
+    </div>
+    <div class="span6">
+        <label for="validator-error-handling">
+            <input type="radio" name="validator-error-handling" value="warn"
+                    <% if (options.validatorErrorHandling && options.validatorErrorHandling == "skip") { %>
+                    checked="checked"
+                    <% } %>
+                  /><span class="label"><%= $CL.translate('VALIDATORS::ERROR_HANDLING::WARN') %></span>
+        </label>
+    </div>
+</div>

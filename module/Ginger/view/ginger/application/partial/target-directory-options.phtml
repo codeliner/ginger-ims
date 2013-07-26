@@ -1,0 +1,19 @@
+<div class="row-fluid">
+    <div class="span12 row-label-element">
+        <label for="targetdirectory-dir"><span><%= $CL.translate('GENERAL::TARGET_DIRECTORY') %></span><select name="targetdirectory-dir" >
+                <option value="inbox">Inbox</option>
+                <option value="outbox">Outbox</option>
+                <option value="custom"><%= $CL.translate('GENERAL::USER_DEFINED') %></option>
+            </select></label>
+    </div>
+</div>
+<div id="targetdirectory-custom-dir-row" class="row-fluid hide">
+    <div class="span12 row-label-element">
+        <label for="targetdirectory-custom-dir"><span><%= $CL.translate('GENERAL::DIRECTORY') %></span><input type="text" name="targetdirectory-custom-dir" /></label>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12 row-label-element">
+        <label for="targetdirectory-filename-pattern"><span><%= $CL.translate('GENERAL::FILE_NAME') %></span><input type="text" name="targetdirectory-filename-pattern" /></label>
+    </div>
+</div>

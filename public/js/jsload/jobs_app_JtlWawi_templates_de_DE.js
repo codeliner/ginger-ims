@@ -1,0 +1,1 @@
+__TEMPLATES__["jtlwawi/index/index"] = "<div class=\"row-fluid\">\r\n    <div class=\"span12\">\r\n        <h1>Jtl Wawi Connect<\/h1>\r\n    <\/div>\r\n<\/div>";

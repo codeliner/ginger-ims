@@ -1,0 +1,34 @@
+<div <% if (!obj.showAlways) { %>class="visible-large-desktop"<% } %>>
+    <div class="row-fluid">
+        <div class="span12">
+            <h3><%= $CL.translate('HEADLINE::JOBS::JOBRUNS') %></h3>
+            <button id="job-starter" class="btn"><i class="icon-play"></i></button>
+            <div class="table-style">
+                <div class="ts-tr">
+                    <div class="ts-th ts-td9">
+                        <%= $CL.translate('JOBS::JOBRUNS::COUNT_SUCCESS') %>:
+                    </div>
+                    <div class="ts-th ts-td3">
+                        <%- jobrun_count_success  %>
+                    </div>
+                </div>
+                <div class="ts-tr">
+                    <div class="ts-td9">
+                        <%= $CL.translate('JOBS::JOBRUNS::COUNT_FAILED') %>:
+                    </div>
+                    <div class="ts-td3">
+                        <%- jobrun_count_failed  %>
+                    </div>
+                </div>
+                <div class="ts-tr">
+                    <div class="ts-td9">
+                        <%= $CL.translate('JOBS::JOBRUNS::COUNT') %>:
+                    </div>
+                    <div class="ts-td3">
+                        <%- jobrun_count  %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

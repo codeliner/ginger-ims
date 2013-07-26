@@ -1,0 +1,47 @@
+<fieldset>
+    <legend><%- obj.module  %>::<%- obj.name  %></legend>
+    <div class="js-feature-advanced-options"></div>
+    <div class="control-group">
+        <div class="well well-small"><%= $CL.translate('FEATURES::INFO::CHOOSE_SITE') %></div>
+        <div class="row-fluid">
+            <div class="span6">
+                <label for="feature-site-to-alter">
+                    <input type="radio" name="feature-site-to-alter" value="source"
+                                <% if (options.site_to_alter && options.site_to_alter == "source") { %>
+                                checked="checked"
+                                <% } %>
+                                /><span class="label"><%= $CL.translate('FEATURES::ACTIVATE_SOURCE') %></span>
+                </label>
+            </div>
+            <div class="span6">
+                <label for="feature-site-to-alter">
+                    <input type="radio" name="feature-site-to-alter" value="target"
+                                <% if (options.site_to_alter && options.site_to_alter == "target") { %>
+                                checked="checked"
+                                <% } %>
+                                /><span class="label"><%= $CL.translate('FEATURES::ACTIVATE_TARGET') %></span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12"></div>
+    </div>
+    <div class="control-group">
+        <div class="row-fluid hide js-feature-attributes-option">
+            <div class="span12">
+                <div class="well well-small"><%= $CL.translate('FEATURES::INFO::CHOOSE_ATTRIBUTES') %></div>
+                <div class="table-style js-feature-attributes">
+                    <div class="ts-tr">
+                        <div class="ts-td12 input-append">
+                            <select name="feature-attribute-chooser" class="no-fluid11">
+                                <option value="all"><%= $CL.translate('GENERAL::ALL') %></option>
+                            </select>
+                            <a href="#" class="btn js-feature-attribute-ok"><i class="icon-ok"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projects>
+    <project>
+        <name>Ginger IMS</name>
+        <version>0.5</version>
+        <developers>
+            <developer>
+                <name>Alexander Miertsch</name>
+                <skills>
+                    <skill>PHP</skill>
+                    <skill>JavaScript</skill>
+                    <skill>ZF2</skill>
+                    <skill>Backbone</skill>
+                    <skill>Codeliner.js</skill>
+                </skills>
+                <position>architect</position>
+            </developer>
+            <developer>
+                <name>D.F.</name>
+                <skills>
+                    <skill>CSS</skill>
+                    <skill>Design</skill>
+                    <skill>CS Suite</skill>
+                </skills>
+                <position>grafic design</position>
+            </developer>
+        </developers>
+    </project>
+    <project>
+        <name>Codeliner.js</name>
+        <version>2.0</version>
+        <developers>
+            <developer>
+                <name>Alexander Miertsch</name>
+                <skills>
+                    <skill>PHP</skill>
+                    <skill>JavaScript</skill>
+                    <skill>ZF2</skill>
+                    <skill>Backbone</skill>
+                    <skill>Codeliner.js</skill>
+                </skills>
+                <position>architect</position>
+            </developer>
+        </developers>
+    </project>
+</projects>

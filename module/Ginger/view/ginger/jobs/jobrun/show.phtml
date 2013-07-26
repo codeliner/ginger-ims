@@ -1,0 +1,35 @@
+<% if (!obj.hideHeader) { %>
+<div class="row-fluid">
+    <div class="span12">
+        <h1><%= $CL.translate('JOBS::JOBRUNS::LOG') %></h1>
+        <a href="#" class="btn js-filter js-all"
+        ><%= $CL.translate('GENERAL::ALL') %></a>&nbsp;<a href="#" class="btn btn-success js-filter js-success"
+        ><%= $CL.translate('GENERAL::INFO') %></a>&nbsp;<a href="#" class="btn btn-warning js-filter js-warning"
+        ><%= $CL.translate('GENERAL::WARNING') %></a>&nbsp;<a href="#" class="btn btn-danger js-filter js-error"
+        ><%= $CL.translate('GENERAL::ERROR') %></a>
+        <p>&nbsp;</p>
+    </div>
+</div>
+<% } %>
+<div class="table-style">
+    <% if (!obj.jobFinished) { %>
+    <div class="ts-tr info">
+        <div class="ts-td12 loading">
+            <p><%= $CL.translate('JOBS::JOBRUN::IS_RUNNING') %></p>
+        </div>
+    </div>
+    <% } %>
+    <% _.each(log, function(logEntry) { %>
+    <div class="row-fluid ts-tr <%- logEntry.status %>">
+        <div class="ts-td12">
+            <span class="label"><%- logEntry.time %></span>
+            <% if (logEntry.msg.indexOf("\n") != -1) { %>
+            <p class="sub-msg"><%- logEntry.msg.substr(0, logEntry.msg.indexOf("\n")) %>...&nbsp;&nbsp;<a href="#" class="label js-more-text"><i class="icon-arrow-down icon-white"></i></a></p>
+            <p class="full-msg hide well well-large"><%= logEntry.msg.substr(logEntry.msg.indexOf("\n") + 1).nl2br()  %></p>
+            <% } else { %>
+            <p><%- logEntry.msg %></p>
+            <% } %>
+        </div>
+    </div>
+    <% }) %>
+</div>

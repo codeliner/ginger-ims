@@ -1,0 +1,72 @@
+<div class="row-fluid">
+    <div class="span12">
+        <h1><%= $CL.translate('HEADLINE::JOBS::CONFIGURATION') %></h1>
+    </div>
+</div>
+<div class="row-fluid margin-bottom15">
+    <div class="span6">
+        <fieldset id="js-source-area">
+            <legend><%= $CL.translate('GENERAL::SOURCE') %></legend>
+            <div class="row-fluid">
+                <div class="span12">
+                    <select name="source" class="no-fluid7">
+                        <option value="none">- <%= $CL.translate('CONFIGURATION::SOURCE::SELECTONE') %> -</option>
+                        <%  _.each(sources, function(source) { %>
+                        <option value="<%- source.id %>"><%- source.module  %>::<%- source.name  %></option>
+                        <% }) %>
+                    </select>
+                    <button id="js-source-options-btn" class="btn btn-info disabled"><i class="icon-pencil icon-white"></i><span class="visible-large-desktop">&nbsp;<%= $CL.translate('GENERAL::CONFIGURATION') %></span></button>
+                    <a href="#" id="js-source-question" class="badge valign-top hide">?</a>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div id="js-source-options" class="hide span12 options-dropdown">
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="span6">
+        <fieldset id="js-target-area" class="disabled">
+            <legend class="muted"><%= $CL.translate('GENERAL::TARGET') %></legend>
+            <div class="row-fluid">
+                <div class="span12">
+                    <select name="target" disabled="disabled" class="no-fluid7">
+                        <option value="none">- <%= $CL.translate('CONFIGURATION::TARGET::SELECTONE') %> -</option>
+                        <%  _.each(targets, function(target) { %>
+                        <option value="<%- target.id %>"><%- target.module  %>::<%- target.name  %></option>
+                        <% }) %>
+                    </select>
+                    <button id="js-target-options-btn" class="btn btn-info disabled"><i class="icon-pencil icon-white"></i><span class="visible-large-desktop">&nbsp;<%= $CL.translate('GENERAL::CONFIGURATION') %></span></button>
+                    <a href="#" id="js-target-question" class="badge valign-top hide">?</a>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div id="js-target-options" class="hide span12 options-dropdown">
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="row-fluid">
+    <div id="js-mapper-options" class="span12"></div>
+</div>
+<div id="sourceModal" class="modal hide">
+    <div class="modal-header dragBar">
+        <% print($CL._template('application_popup_bar')()); %>
+        <h3><%= $CL.translate('GENERAL::SOURCE') %></h3>
+    </div>
+    <div class="modal-body">
+
+    </div>
+</div>
+<div id="targetModal" class="modal hide">
+    <div class="modal-header dragBar">
+        <% print($CL._template('application_popup_bar')()); %>
+        <h3><%= $CL.translate('GENERAL::TARGET') %></h3>
+    </div>
+    <div class="modal-body">
+
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<% if (jobruns.length == 0) { %>
+<div class="row-fluid">
+    <div class="span12">
+        <span class="alert alert-warning"><%= $CL.translate('JOBS::JOBRUNS::NORUNS') %></span>
+    </div>
+</div>
+<% } else {
+    _.each(jobruns, function(jobrun) {
+        print(
+            $CL._template('jobs_jobrun_entry')(_.extend({jobname : jobrun.jobName, hideStart : true, showJobname : true}, jobrun))
+            )
+    })
+} %>

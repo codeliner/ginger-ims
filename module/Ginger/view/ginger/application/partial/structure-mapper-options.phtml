@@ -1,0 +1,39 @@
+<fieldset>
+    <legend><%= $CL.translate('CONFIGURATION::MAPPER::HEADLINE') %></legend>
+    <div id="js-table-structure-mapping" class="table-style">
+        <div class="ts-tr">
+            <div class="ts-th ts-td4"><%= $CL.translate('GENERAL::SOURCE_ATTRIBUTE') %></div>
+            <div class="ts-th ts-td2">&nbsp;</div>
+            <div class="ts-th ts-td4"><%= $CL.translate('GENERAL::TARGET_ATTRIBUTE') %></div>
+            <div class="ts-th ts-td2">&nbsp;</div>
+        </div>
+        <% if ($CL.isDefined(obj.elementData.options['mapping'])) { %>
+        <% $.each(obj.elementData.options.mapping, function(sourceColumn, targetColumn) { %>
+        <div class="ts-tr js-mapper-columns">
+            <div class="ts-td4 js-source-td"><%- sourceColumn  %></div>
+            <div class="ts-td2">&nbsp;</div>
+            <div class="ts-td4 js-target-td"><%- targetColumn  %></div>
+            <div class="ts-td2"><% print($CL._template('application_edit_remove')({id : 0})); %></div>
+        </div>
+        <% }); %>
+        <% } %>
+        <div id="js-mapper-column-chooser" class="ts-tr <% if (obj.sourceInfo.data_structure.length == 0 || obj.targetInfo.data_structure.length == 0) { %>hide<% } %>">
+            <div class="ts-td4 js-source-td">
+                <select id="js-mapper-source-select" class="no-fluid12">
+                    <% _.each(obj.sourceInfo.data_structure, function(columnDesc) { %>
+                    <option><%- columnDesc.name  %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="ts-td2">&nbsp;</div>
+            <div class="ts-td4 js-target-td">
+                <select id="js-mapper-target-select" class="no-fluid12">
+                    <% _.each(obj.targetInfo.data_structure, function(columnDesc) { %>
+                    <option><%- columnDesc.name  %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="ts-td2"><a href="#" class="btn js-mapper-column-ok"><i class="icon-ok"></i></a></div>
+        </div>
+    </div>
+</fieldset>

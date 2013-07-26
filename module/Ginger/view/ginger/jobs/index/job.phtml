@@ -1,0 +1,20 @@
+<div class="row-fluid">
+    <div class="span12">
+        <h1><%- $CL.translate('JOBS::HISTORY').replace(':jobname', obj.name) %></h1>
+        <p>@todo: per default nur die aktuellsten anzeigen und auswahlmöglichkeit für alle anzeigen. Pagination usw. kommt später</p>
+        <p>@todo: filter für nur erfolgreich oder nur error</p>
+    </div>
+</div>
+<% if (jobruns.length == 0) { %>
+<div class="row-fluid">
+    <div class="span12">
+        <span class="alert alert-warning"><%= $CL.translate('JOBS::JOBRUNS::NORUNS') %></span>
+    </div>
+</div>
+<% } else {
+    _.each(jobruns, function(jobrun) {
+        print(
+            $CL._template('jobs_jobrun_entry')(_.extend({jobname : obj.name, hideStart : true}, jobrun))
+            )
+    })
+} %>

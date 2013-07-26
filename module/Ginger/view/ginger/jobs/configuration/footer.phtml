@@ -1,0 +1,29 @@
+<div class="form-actions">
+    <button class="btn btn-primary js-btn-save"><%= $CL.translate('BUTTON::SAVE') %></button>
+    <button class="btn js-btn-cancel"><%= $CL.translate('BUTTON::BACK') %></button>&nbsp;<span class="alert alert-success hide"><%= $CL.translate('CONFIGURATION::SAVED_SUCCESSFUL') %></span>
+    <div class="pull-right">
+        <button class="btn js-btn-export"><i class="icon-chevron-down"></i>&nbsp;<%= $CL.translate('BUTTON::EXPORT') %></button>
+        <button class="btn js-btn-import"><i class="icon-chevron-up"></i>&nbsp;<%= $CL.translate('BUTTON::IMPORT') %></button>
+    </div>
+</div>
+<div id="configurationImportModal" class="modal hide modal-absolute">
+    <div class="modal-header dragBar">
+        <% print($CL._template('application_popup_bar')({hideMinMax : true})); %>
+        <h3><%= $CL.translate('DIALOG::CHOOSE_IMPORT_FILE') %></h3>
+    </div>
+    <div class="modal-body">
+        <div class="row-fluid">
+            <div class="span12">
+                <form name="js-import" method="post" action="/import/configuration" enctype="multipart/form-data" target="import-response">
+                    <button id="import-search-btn" class="btn btn-info"><i class="icon-search icon-white"></i><%= $CL.translate('BUTTON::SEARCH_FILE') %></button>&nbsp;<span id="import-file-name-label" class="well well-small">...</span>
+                    <input type="file" name="import-file" class="hide" />
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn js-cancel-import"><%= $CL.translate('BUTTON::CANCEL') %></a>
+        <a href="#" class="btn btn-primary js-perform-import"><%= $CL.translate('BUTTON::OK') %></a>
+    </div>
+</div>
+<iframe id="import-response" name="import-response" class="hide" />

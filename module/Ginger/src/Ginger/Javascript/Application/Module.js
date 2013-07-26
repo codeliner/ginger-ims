@@ -1,0 +1,372 @@
+var Application = $CL.namespace("Ginger.Application");
+
+$CL.require("Cl.Application.Module.ModuleInterface");
+$CL.require("Cl.Backbone.ViewRenderingStrategy");
+$CL.require("Cl.Backbone.Layout");
+$CL.require("Cl.Jquery.Plugin.Scroll.To");
+$CL.require("Cl.Jquery.Plugin.Effect.Core");
+//controllers
+$CL.require("Ginger.Application.Controller.ModuleLoader");
+//services
+$CL.require("Ginger.Application.Service.ModuleElement.ElementLoader");
+//collections
+$CL.require('Ginger.Application.Collection.Modules');
+//models
+$CL.require("Ginger.Application.Model.Mapper.StructureMapper");
+$CL.require("Ginger.Application.Model.File.SourceFile");
+$CL.require("Ginger.Application.Model.Directory.SourceDirectory");
+$CL.require("Ginger.Application.Model.Directory.TargetDirectory");
+$CL.require("Ginger.Application.Model.Script.SourceScript");
+$CL.require("Ginger.Application.Model.Script.DevNullTarget");
+$CL.require("Ginger.Application.Model.Feature.AbstractFeature");
+$CL.require("Ginger.Application.Model.Feature.ValidatorFeature");
+$CL.require("Ginger.Application.Model.Feature.FilterFeature");
+$CL.require("Ginger.Application.Model.Feature.AttributeMapFeature");
+$CL.require("Ginger.Application.Model.Feature.StaticValueFeature");
+//Views
+$CL.require("Ginger.Application.View.Helper.Breadcrumbs");
+$CL.require("Ginger.Application.View.Partial.StructureMapperOptions");
+$CL.require("Ginger.Application.View.Partial.SourcefileOptions");
+$CL.require("Ginger.Application.View.Partial.SourceDirectoryOptions");
+$CL.require("Ginger.Application.View.Partial.TargetDirectoryOptions");
+$CL.require("Ginger.Application.View.Partial.SourceScriptOptions");
+$CL.require("Ginger.Application.View.Partial.DevNullOptions");
+$CL.require("Ginger.Application.View.Partial.AbstractFeatureOptions");
+$CL.require("Ginger.Application.View.Partial.ValidatorFeatureOptions");
+$CL.require("Ginger.Application.View.Partial.AttributeMapFeatureOptions");
+$CL.require("Ginger.Application.View.Partial.AttributeMapFeatureHelp");
+$CL.require("Ginger.Application.View.Partial.StaticValueFeatureOptions");
+$CL.require("Ginger.Application.View.Partial.StaticValueFeatureHelp");
+$CL.require("Ginger.Application.View.Partial.Footer");
+
+
+Application.Module = function() {
+    this.__IMPLEMENTS__ = [Cl.Application.Module.ModuleInterface];
+};
+
+Application.Module.prototype = {
+    getConfig : function() {
+        return {
+            router : {
+                routes : {
+                    'application_load_module' : {
+                        route : 'application/load-module/:moduleName/:gotoRoute',
+                        callback : function(moduleName, gotoRoute) {
+                            return $CL.makeObj(
+                                "Cl.Application.Router.RouteMatch",
+                                {
+                                    module : "Ginger.Application.Module",
+                                    controller : "moduleLoader",
+                                    action : "loadModule",
+                                    params : {
+                                        moduleName : moduleName,
+                                        gotoRoute : gotoRoute
+                                    }
+                                }
+                            );
+                        },
+                        build : function(routeParams) {
+                            return this.route
+                            .replace(':moduleName', routeParams.moduleName)
+                            .replace(':gotoRoute', routeParams.gotoRoute);
+                        }
+                    }
+                },
+                history : {
+                    silent : false,
+                    pushState: false,
+                    hashChange: true
+                }
+            },
+            view : {
+                strategies : [
+                    {
+                        key : "Cl.Backbone.ViewRenderingStrategy",
+                        priority : -90
+                    }
+                ]
+            },
+            service_manager : {
+                factories : {
+                    //models
+                    //be aware of the missing Application namespace in mapper alias. It's important,
+                    //cause otherwise autoloading of mapper in configuration edit doesn't work.
+                    'Ginger.Model.Mapper.TableStructureMapper' : function(sl) {
+                        //use object creation of serviceManager, so mapper instance will be cached
+                        return sl.get('Ginger.Application.Model.Mapper.StructureMapper');
+                    },
+                    'Ginger.Model.Mapper.DocumentStructureMapper' : function(sl) {
+                        //use object creation of serviceManager, so mapper instance will be cached
+                        return sl.get('Ginger.Application.Model.Mapper.StructureMapper');
+                    },
+                    'Ginger.Model.File.SourceFile' : function(sl) {
+                        //use object creation of serviceManager, so mapper instance will be cached
+                        return sl.get('Ginger.Application.Model.File.SourceFile');
+                    },
+                    'Ginger.Model.Directory.SourceDirectory' : function(sl) {
+                        return sl.get('Ginger.Application.Model.Directory.SourceDirectory');
+                    },
+                    'Ginger.Model.Directory.TargetDirectory' : function(sl) {
+                        return sl.get('Ginger.Application.Model.Directory.TargetDirectory');
+                    },
+                    'Ginger.Model.Script.SourceScript' : function(sl) {
+                        return sl.get('Ginger.Application.Model.Script.SourceScript');
+                    },
+                    'Ginger.Model.Script.DevNullTarget' : function(sl) {
+                        return sl.get('Ginger.Application.Model.Script.DevNullTarget');
+                    },
+                    'Ginger.Model.Feature.ValidatorFeature' : function(sl) {
+                        return sl.get('Ginger.Application.Model.Feature.ValidatorFeature');
+                    },
+                    'Ginger.Model.Feature.FilterFeature' : function(sl) {
+                        return sl.get('Ginger.Application.Model.Feature.FilterFeature');
+                    },
+                    'Ginger.Model.Feature.AttributeMapFeature' : function(sl) {
+                        return sl.get('Ginger.Application.Model.Feature.AttributeMapFeature');
+                    },
+                    'Ginger.Model.Feature.StaticValueFeature' : function(sl) {
+                        return sl.get('Ginger.Application.Model.Feature.StaticValueFeature');
+                    },
+                    'Ginger.Application.Model.Mapper.StructureMapper' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Mapper.StructureMapper');
+                        m.setOptionsView(sl.get('Ginger.Application.View.Partial.StructureMapperOptions'));
+                        m.setSourceInfoCollection(sl.get('Ginger.Jobs.Collection.SourceInfos'));
+                        m.setTargetInfoCollection(sl.get('Ginger.Jobs.Collection.TargetInfos'));
+                        return m;
+                    },
+                    'Ginger.Application.Model.File.SourceFile' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.File.SourceFile');
+                        m.setOptionsView(sl.get('Ginger.Application.View.Partial.SourcefileOptions'));
+                        return m;
+                    },
+                    'Ginger.Application.Model.Directory.SourceDirectory' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Directory.SourceDirectory');
+                        m.setOptionsView(sl.get('Ginger.Application.View.Partial.SourceDirectoryOptions'));
+                        return m;
+                    },
+                    'Ginger.Application.Model.Directory.TargetDirectory' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Directory.TargetDirectory');
+                        m.setOptionsView(sl.get('Ginger.Application.View.Partial.TargetDirectoryOptions'));
+                        return m;
+                    },
+                    'Ginger.Application.Model.Script.SourceScript' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Script.SourceScript');
+                        m.setOptionsView(sl.get('Ginger.Application.View.Partial.SourceScriptOptions'));
+                        return m;
+                    },
+                    'Ginger.Application.Model.Script.DevNullTarget' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Script.DevNullTarget');
+                        m.setOptionsView(sl.get('Ginger.Application.View.Partial.DevNullOptions'));
+                        return m;
+                    },
+                    'Ginger.Application.Model.Feature.ValidatorFeature' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Feature.ValidatorFeature');
+                        var v = sl.get('Ginger.Application.View.Partial.AbstractFeatureOptions');
+                        v.id = "ValidatorFEature";
+                        v.setAdvancedOptionsView(sl.get('Ginger.Application.View.Partial.ValidatorFeatureOptions'));
+                        m.setOptionsView(v);
+                        return m;
+                    },
+                    'Ginger.Application.Model.Feature.FilterFeature' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Feature.FilterFeature');
+                        var v = sl.get('Ginger.Application.View.Partial.AbstractFeatureOptions');
+                        v.id = "FilterFeature";
+                        m.setOptionsView(v);
+                        return m;
+                    },
+                    'Ginger.Application.Model.Feature.AttributeMapFeature' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Feature.AttributeMapFeature');
+                        var v = sl.get('Ginger.Application.View.Partial.AttributeMapFeatureOptions');
+                        m.setOptionsView(v);
+                        m.setHelpView(sl.get('Ginger.Application.View.Partial.AttributeMapFeatureHelp'));
+                        return m;
+                    },
+                    'Ginger.Application.Model.Feature.StaticValueFeature' : function(sl) {
+                        var m = $CL.makeObj('Ginger.Application.Model.Feature.StaticValueFeature');
+                        var v = sl.get('Ginger.Application.View.Partial.AbstractFeatureOptions');
+                        v.id = "StaticValueFeature";
+                        v.setAdvancedOptionsView(sl.get('Ginger.Application.View.Partial.StaticValueFeatureOptions'));
+                        m.setOptionsView(v);
+                        m.setHelpView(sl.get('Ginger.Application.View.Partial.StaticValueFeatureHelp'));
+                        return m;
+                    },
+                    //Collections
+                    'Ginger.Application.Collection.Modules' : function(sl) {
+                        var c = $CL.makeObj('Ginger.Application.Collection.Modules');
+                        c.reset($CL.variable('connect_modules', {}));
+                        return c;
+                    },
+                    //services
+                    'module_element_loader' : function(sl) {
+                        return $CL.makeObj('Ginger.Application.Service.ModuleElement.ElementLoader');
+                    },
+                    //views
+                    "Ginger.Application.View.Helper.Breadcrumbs" : function(sl) {
+                        var v = $CL.makeObj("Ginger.Application.View.Helper.Breadcrumbs");
+                        v.setTemplate($CL._template('application_breadcrumbs'));
+                        return v;
+                    },
+                    "Ginger.Application.View.Partial.StructureMapperOptions" : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.StructureMapperOptions');
+                        v.setTemplate($CL._template('application_structure_mapper_options'));
+                        return v;
+                    },
+                    "Ginger.Application.View.Partial.SourcefileOptions" : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.SourcefileOptions');
+                        v.setTemplate($CL._template('application_sourcefile_options'));
+                        return v;
+                    },
+                    'Ginger.Application.View.Partial.SourceDirectoryOptions' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.SourceDirectoryOptions');
+                        v.setTemplate($CL._template('application_sourcedirectory_options'));
+                        return v;
+                    },
+                    'Ginger.Application.View.Partial.TargetDirectoryOptions' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.TargetDirectoryOptions');
+                        v.setTemplate($CL._template('application_targetdirectory_options'));
+                        return v;
+                    },
+                    'Ginger.Application.View.Partial.SourceScriptOptions' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.SourceScriptOptions');
+                        v.setTemplate($CL._template('application_sourcescript_options'));
+                        return v;
+                    },
+                    'Ginger.Application.View.Partial.DevNullOptions' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.DevNullOptions');
+                        v.setTemplate($CL._template('application_devnull_options'));
+                        return v;
+                    },
+                    'Ginger.Application.View.Partial.AbstractFeatureOptions' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.AbstractFeatureOptions');
+                        v.setTemplate($CL._template('application_abstract_feature_options'));
+                        return v;
+                    },
+                    'Ginger.Application.View.Partial.ValidatorFeatureOptions' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.ValidatorFeatureOptions');
+                        v.setTemplate($CL._template('application_validator_feature_options'));
+                        return v;
+                    },
+                    'Ginger.Application.View.Partial.AttributeMapFeatureOptions' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.AttributeMapFeatureOptions');
+                        v.setTemplate($CL._template('application_attributemap_feature_options'));
+                        return v;
+                    },
+                    'Ginger.Application.View.Partial.StaticValueFeatureOptions' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Partial.StaticValueFeatureOptions');
+                        v.setTemplate($CL._template('application_staticvalue_feature_options'));
+                        return v;
+                    }
+                },
+                'non_shared_services' : [
+                    "Ginger.Application.View.Partial.AbstractFeatureOptions"
+                ]
+            }
+        }
+    },
+    onBootstrap : function(e) {
+        //initialize Backbone.Layout
+        $CL.get('Cl.Backbone.Layout', {id : 'js_content'});
+
+        //register breadcrumbs and layout listener
+        $CL.get("application").events().attach("render", function(e) {
+            var layout = e.getResponse();
+
+            if (layout && $CL.isInstanceOf(layout, Cl.Backbone.Layout)) {
+                var b = $CL.get("Ginger.Application.View.Helper.Breadcrumbs");
+                b.setData(e.getParam('breadcrumbs', []));
+                layout.addChild(b);
+
+                var sidebar = e.getParam('sidebar');
+
+                if (!sidebar || !$CL.isInstanceOf(sidebar, Cl.Backbone.View)) {
+                    sidebar = $CL.get('Ginger.Dashboard.View.Index.Sidebar');
+                }
+
+                sidebar.setElement($('#js-sidebar'));
+                layout.addChild(sidebar);
+
+                var footer = e.getParam('footer');
+
+                if (!footer || !$CL.isInstanceOf(footer, Cl.Backbone.View)) {
+                    footer = $CL.get('Ginger.Application.View.Partial.Footer');
+                }
+
+                footer.setElement($('#js-footer'));
+                layout.addChild(footer);
+            }
+        }, 90);
+
+        var _checkSidebar = function() {
+            if ($('#js-sidebar').children().first().hasClass('visible-large-desktop')
+                && $('#js-sidebar').children().first().is(':hidden')) {
+                $('#js-sidebar').parent().removeClass('span4').addClass('span0');
+                $('#js_content').removeClass('span8').addClass('span12');
+            } else {
+                $('#js-sidebar').parent().removeClass('span0').addClass('span4');
+                $('#js_content').removeClass('span12').addClass('span8');
+            }
+
+            if ($('#js-sidebar').children().first().hasClass('topbar-on-small-devices')) {
+                $('#js-sidebar').children().first().removeClass('overrideDisplay');
+
+                if ($('#js-sidebar').children().first().is(':hidden')) {
+                    if ($('#js-sidebar').parent().hasClass('span4') || $('#js-sidebar').parent().hasClass('span0')) {
+                        $('#js-sidebar').parent().removeClass('span4').addClass('span12');
+                        $('#js-sidebar').children().first().addClass('overrideDisplay');
+
+                        var $newRow = $('<div />').addClass('row-fluid').append($('#js-sidebar').parent());
+
+                        $('#js_content').removeClass('span8').addClass('span12').parent().before($newRow);
+                    }
+                } else {
+                    $('#js-sidebar').parent().removeClass('span12').addClass('span4');
+                    $('#js-sidebar').children().first().removeClass('overrideDisplay');
+
+                    $('#js_content').removeClass('span12').addClass('span8').after($('#js-sidebar').parent());
+
+                    $('#js_content').prev().remove();
+                }
+            }
+
+            if ($('#js-sidebar').children().first().hasClass('bottombar-on-small-devices')) {
+                $('#js-sidebar').children().first().removeClass('overrideDisplay');
+
+                if ($('#js-sidebar').children().first().is(':hidden')) {
+                    if ($('#js-sidebar').parent().hasClass('span4') || $('#js-sidebar').parent().hasClass('span0')) {
+                        $('#js-sidebar').parent().removeClass('span4').addClass('span12');
+                        $('#js-sidebar').children().first().addClass('overrideDisplay');
+
+                        var $newRow = $('<div />').attr('id', 'sidebar-to-bottombar').addClass('row-fluid').append($('#js-sidebar').parent());
+
+                        $('#js_content').removeClass('span8').addClass('span12').parent().after($newRow);
+                    }
+                } else {
+                    $('#js-sidebar').parent().removeClass('span12').addClass('span4');
+                    $('#js-sidebar').children().first().removeClass('overrideDisplay');
+
+                    $('#js_content').removeClass('span12').addClass('span8').after($('#js-sidebar').parent());
+
+                    $('#js_content').next('#sidebar-to-bottombar').remove();
+                }
+            }
+        }
+
+        $CL.get("application").events().attach("finish", function() {
+            _checkSidebar();
+        });
+
+        $(window).resize(function() {
+            _checkSidebar();
+        });
+    },
+    getController : function(controllerName) {
+        controllerName = controllerName.ucfirst();
+
+        if ($CL.classExists("Ginger.Application.Controller." + controllerName)) {
+            return $CL.get("Ginger.Application.Controller." + controllerName);
+        } else {
+            $CL.exception("unknown controllername", "Ginger.Application.Module", controllerName);
+        }
+    }
+};
+
