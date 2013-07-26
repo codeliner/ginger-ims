@@ -1,0 +1,48 @@
+<fieldset>
+    <legend><%= $CL.translate('ATTRIBUTEMAP::HEADLINE') %></legend>
+    <div class="table-style" id="js-attributemap">
+        <div class="row-fluid ts-tr">
+            <div class="ts-th ts-td5">
+                <%= $CL.translate('GENERAL::SOURCE_ATTRIBUTE') %>
+            </div>
+            <div class="ts-th ts-td5">
+                <%= $CL.translate('GENERAL::TARGET_ATTRIBUTE') %>
+            </div>
+            <div class="ts-th ts-td2">&nbsp;</div>
+        </div>
+        <% if ($CL.isDefined(obj.options['attribute_map'])) { %>
+        <% $.each(obj.options.attribute_map, function(sourceColumn, targetColumn) { %>
+        <div class="row-fluid ts-tr js-attributemap-column">
+            <div class="ts-td5 js-source-td">
+                <%- sourceColumn  %>
+            </div>
+            <div class="ts-td5 js-target-td">
+                <%- targetColumn  %>
+            </div>
+            <div class="ts-td2">
+                <% print($CL._template('application_edit_remove')({id : 0})); %>
+            </div>
+        </div>
+        <% }); %>
+        <% } %>
+        <div id="js-attributemap-column-chooser" class="row-fluid ts-tr <% if (obj.sourceInfo.data_structure.length == 0 || obj.targetInfo.data_structure.length == 0) { %>hide<% } %>">
+             <div class="ts-td5 js-source-td">
+                 <select id="js-attributemap-source-select" class="no-fluid12">
+                    <% _.each(obj.sourceInfo.data_structure, function(columnDesc) { %>
+                    <option><%- columnDesc.name  %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="ts-td5 js-target-td">
+                <select id="js-attributemap-target-select" class="no-fluid12">
+                    <% _.each(obj.targetInfo.data_structure, function(columnDesc) { %>
+                    <option><%- columnDesc.name  %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="ts-td2">
+                <a href="#" class="btn js-attributemap-column-ok"><i class="icon-ok"></i></a>
+            </div>
+        </div>
+    </div>
+</fieldset>

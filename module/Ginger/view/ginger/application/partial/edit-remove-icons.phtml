@@ -1,0 +1,9 @@
+<% if (!obj.hideEdit) {
+%><a href="#" class="js-edit label label-info" data-id="<%- obj.id  %>"><i class="icon-edit icon-white"></i></a><%
+} %><%
+if ($CL.isDefined(obj.showSort)) {
+%>&nbsp;&nbsp;<a href="#" class="js-sort-up" data-id="<%- obj.id  %>"><i class="icon-arrow-up"></i></a><a href="#" class="js-sort-down" data-id="<%- obj.id  %>"><i class="icon-arrow-down"></i></a><%
+} %><%
+if (!obj.hideRemove) {
+%><a href="#" class="js-remove close" data-id="<%- obj.id  %>">&times;</a><%
+} %>

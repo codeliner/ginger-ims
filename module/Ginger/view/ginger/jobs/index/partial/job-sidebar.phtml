@@ -1,0 +1,16 @@
+<div class="well well-large topbar-on-small-devices visible-large-desktop">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3><%= $CL.translate('GENERAL::INFO') %></h3>
+            <%- description %>
+        </div>
+    </div>
+    <p>&nbsp;</p>
+    <div class="row-fluid">
+        <div class="span12 js-edit-job">
+            <label for="job-edit"><% print($CL._template('application_edit_remove')({hideRemove: true, id : name})) %>&nbsp;<strong><%= $CL.translate('JOBS::LABEL::EDIT') %></strong></label>
+        </div>
+    </div>
+    <div id="js-edit-sidebar">
+    </div>
+</div>

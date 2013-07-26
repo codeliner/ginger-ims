@@ -1,0 +1,76 @@
+<?php
+//$pluginManager = new Admin\View\Helper\Navigation\PluginManager();
+//
+//$this->navigation()->setPluginManager($pluginManager);
+//
+// create iterator
+$iterator = new \RecursiveIteratorIterator($this->container,
+                            \RecursiveIteratorIterator::SELF_FIRST);
+
+
+
+$prevDepth = -1;
+$indent = '';
+$html = '';
+
+
+foreach ($iterator as $page) {
+    $isActive = $page->isActive(true);
+    $depth = $iterator->getDepth();
+    // make sure indentation is correct
+    $myIndent = $indent . str_repeat('        ', $depth);
+
+    if ($depth > $prevDepth) {
+        // start new ul tag
+        if ($depth ==  0) {
+            $ulClass = ' class="nav"';
+        } else {
+            $ulClass = ' class="dropdown-menu"';
+        }
+        $html .= $myIndent . '<ul' . $ulClass . '>' . "\n";
+    } else if ($prevDepth > $depth) {
+        // close li/ul tags until we're at current depth
+        for ($i = $prevDepth; $i > $depth; $i--) {
+            $ind = $indent . str_repeat('        ', $i);
+            $html .= $ind . '    </li>' . "\n";
+            $html .= $ind . '</ul>' . "\n";
+        }
+        // close previous li tag
+        $html .= $myIndent . '    </li>' . "\n";
+    } else {
+        // close previous li tag
+        $html .= $myIndent . '    </li>' . "\n";
+    }
+
+    if ($page->hasChildren()) {
+        $liDropdownClass = 'dropdown';
+        $page->setClass('dropdown-toggle');
+        $page->set('data-toggle', 'dropdown');
+        $label = $page->getLabel();
+        $page->setLabel($label . '<b class="caret"></b>');
+    } else {
+        $liDropdownClass = '';
+    }
+
+    // render li tag and page
+    $liClass = $isActive ? ' class="active '  .$liDropdownClass. '"' : ' class="' . $liDropdownClass . '"';
+    $liId = $page->liId ? 'id="'.$page->liId.'"' : '';
+    $html .= $myIndent . '    <li ' . $liId . ' ' . $liClass . '>' . "\n"
+           . $myIndent . '        ' . $this->navigation()->menu()->htmlify($page, false) . "\n";
+
+    // store as previous depth for next iteration
+    $prevDepth = $depth;
+}
+
+if ($html) {
+    // done iterating container; close open ul/li tags
+    for ($i = $prevDepth+1; $i > 0; $i--) {
+        $myIndent = $indent . str_repeat('        ', $i-1);
+        $html .= $myIndent . '    </li>' . "\n"
+               . $myIndent . '</ul>' . "\n";
+    }
+    $html = rtrim($html, "\n");
+}
+
+echo $html;
+?>

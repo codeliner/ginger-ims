@@ -1,0 +1,43 @@
+<%
+obj.aggregateConfigRuns = function(configRuns) {
+    var totalRuns = 0,
+    successfulRuns = 0,
+    insertedItems = 0,
+    totalItems = 0;
+    _.each(configRuns, function(configRun) {
+        totalRuns++;
+        if (configRun.success) {successfulRuns++}
+        insertedItems += configRun.insertedItemCount;
+        totalItems += configRun.totalItemCount;
+    });
+
+    print(successfulRuns + " / " + totalRuns + " ");
+    print($CL.translate('JOBS::LABEL::SUCCESSFUL_CONFIGURATIONS'));
+    print("&nbsp;&nbsp;|&nbsp;&nbsp;" + insertedItems + " / " + totalItems + " ");
+    print($CL.translate('JOBS::LABEL::SUCCESSFUL_ACTIONS'));
+};
+%>
+<div class="row-fluid js-jobrun-row alert alert-<% (success)? print('success') : print('error'); %>">
+    <div class="span5">
+        <a href="#<% print(helpers.uri('jobs_jobrun', {jobname : jobname, id : id})) %>"><% print(helpers.datetime(startTime)) %></a>
+    </div>
+    <% if (obj.showJobname) { %>
+    <div class="span5">
+        <%- jobname %>
+    </div>
+    <% } else { %>
+    <div class="span5">
+        <% (success)? print($CL.translate('GENERAL::SUCCESSFUL')) : print($CL.translate('GENERAL::ERRORFUL')); %>
+    </div>
+    <% } %>
+    <div class="span2">
+        <a href="#" class="label js-show-details"><i class="icon-arrow-down icon-white"></i></a>
+    </div>
+</div>
+<div class="row-fluid well well-small hide js-jobrun-details">
+    <div class="span1"><% if (!obj.hideStart) { %><a href="#" class="js-jobrun-start"><i class="icon-repeat"></i></a><% } %></div>
+    <div class="span2"><%= $CL.translate('GENERAL::DURATION') %>:&nbsp;<% print(helpers.duration(startTime, endTime)) %></div>
+    <div class="span8"><% aggregateConfigRuns(configurationRuns) %></div>
+    <div class="span1"><% if (!obj.hideRemove) { %><% print($CL._template('application_edit_remove')({hideEdit : true, id : obj.id})) %><% } %></div>
+</div>
+

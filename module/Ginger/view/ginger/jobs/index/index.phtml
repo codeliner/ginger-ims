@@ -1,0 +1,46 @@
+<div class="row-fluid">
+    <div class="span12">
+        <h1><%= $CL.translate('HEADLINE::JOBS') %></h1>
+    </div>
+</div>
+<% if (jobs.length == 0) { %>
+<div class="row-fluid">
+    <div class="span12 alert"><%= $CL.translate('JOBS::NO_JOBS') %></div>
+</div>
+<% } else { %>
+<div class="row-fluid">
+<%
+obj.lastIndex = 0;
+$.each(jobs, function(i, job){
+%>
+    <div class="span6">
+        <div class="well well-block">
+            <div class="row-fluid">
+                <div class="span12">
+                    <a href="#<% print(helpers.uri('jobs_job', {name : job.name})) %>"><%- job.name  %></a>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <%- job.description  %>
+                </div>
+            </div>
+        </div>
+    </div>
+<% if (((i+1) % 2) == 0) { %>
+</div>
+<div class="row-fluid">
+<% } %>
+<% obj.lastIndex = i; %>
+<%}) %>
+<% if (((obj.lastIndex+1) % 2) != 0) { %>
+    <div class="span6"></div>
+<% } %>
+</div>
+<% } %>
+<div class="row-fluid">
+    <div class="span12">
+        <a href="#<% print(helpers.uri('jobs_add_form')); %>" class="btn"><%= $CL.translate('JOBS::BUTTON::ADD') %>&nbsp;<i class="icon-plus"></i></a>
+    </div>
+</div>
+

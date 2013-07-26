@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <name>Ginger IMS</name>
+    <version>0.5</version>
+    <developers>
+        <item>
+            <name>Alexander Miertsch</name>
+            <skills>
+                <item>PHP</item>
+                <item>JavaScript</item>
+                <item>ZF2</item>
+                <item>Backbone</item>
+                <item>Codeliner.js</item>
+            </skills>
+            <position>architect</position>
+        </item>
+    </developers>
+</project>

@@ -1,0 +1,67 @@
+<div class="well well-large bottombar-on-small-devices visible-large-desktop">
+<div class="row-fluid">
+    <div class="span12">
+        <fieldset id="js-feature-area" class="<% if (!obj.isEnabled) { %>disabled<% } %>">
+            <legend class="<% if (!obj.isEnabled) { %>muted<% } %>"><%= $CL.translate('GENERAL::FEATURES') %></legend>
+            <div class="feature-tab activated-features">
+                <div id="activated-features" class="row-fluid table-style">
+                    <div class="span12">
+                        <div class="ts-tr js-default-row js-th hide">
+                            <div class="ts-th ts-td8"><%= $CL.translate('FEATURE::TH') %></div>
+                            <div class="ts-th ts-td4"></div>
+                        </div>
+                        <div class="ts-tr hide js-copy-row js-default-row">
+                            <div class="ts-td8">
+
+                            </div>
+                            <div class="ts-td4">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <a href="#" class="btn <% if (!obj.isEnabled) { %>disabled<% } %> js-add-feature"><%= $CL.translate('FEATURE::ADD') %>&nbsp;<i class="icon-plus"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-tab hide add-feature">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <select name="js-feature-filter" class="span12">
+                            <option value="all">- <%= $CL.translate('FEATURES::LABEL::TYPE') %> -</option>
+                            <option value="filter"><%= $CL.translate('GENERAL::FILTERS') %></option>
+                            <option value="validator"><%= $CL.translate('GENERAL::VALIDATORS') %></option>
+                            <option value="mapper"><%= $CL.translate('GENERAL::MAPPERS') %></option>
+                            <option value="manipulator"><%= $CL.translate('GENERAL::MANIPULATORS') %></option>
+                            <option value="other"><%= $CL.translate('GENERAL::OTHERS') %></option>
+                        </select>
+                        <p>&nbsp;</p>
+                        <div class="control-group">
+                            <select name="feature-edit" class="span12">
+                                <option value="none" class="intro-option">- <%= $CL.translate('FEATURES::CHOOSE_FEATURE') %> -</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid hide">
+                    <div id="feature-help-con" class="span12 well"></div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="form-actions">
+                            <button class="btn btn-primary js-btn-next"><%= $CL.translate('BUTTON::NEXT') %></button>
+                            <button class="btn js-btn-cancel"><%= $CL.translate('BUTTON::CANCEL') %></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-tab hide js-feature-options">
+                <div class="js-feature-options-container"></div>
+                <% print($CL._template('application_form_submit')()) %>
+            </div>
+        </fieldset>
+    </div>
+</div>
+</div>

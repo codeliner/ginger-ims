@@ -1,0 +1,29 @@
+<?php
+/**
+ * layout head script
+ *
+ * @author D.Fenske <fenske@websubstanz.de>
+ * @package Layout
+ * @version 1.0
+ */
+echo $this->doctype();
+?><html>
+    <head>
+	<?php echo $this->headMeta()->setCharset("UTF-8"); ?>
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="<?php echo $this->basePath('css/bootstrap.css'); ?>" rel="stylesheet" type="text/css" >
+    <link href="<?php echo $this->basePath('css/bootstrap-responsive.css'); ?>" rel="stylesheet" type="text/css" >
+	<link href="<?php echo $this->basePath('css/style.css'); ?>" rel="stylesheet" type="text/css" >
+    <?php echo $this->headLink(); ?>
+    <!--[if lt IE 7]>
+    <meta http-equiv="refresh" content="0; url=<?php echo $this->url("ie_advise"); ?>"/>
+    <![endif]-->
+    <!--[if lt IE 9]>
+    <link href="/css/style_ie.css" rel="stylesheet" type="text/css" >
+    <![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700|Open+Sans:400,700|Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+	<script type="text/javascript" src="<?php echo $this->basePath('js/libs.js'); ?>"></script>
+	<?php echo $this->headScript(); ?>
+    </head>

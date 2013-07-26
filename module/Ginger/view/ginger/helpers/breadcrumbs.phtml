@@ -1,0 +1,15 @@
+<% (function(links) {
+var linkCount = 0;
+if (links) {
+print('<ul class="breadcrumb">');
+_.each(links, function(linkData) {
+linkCount++;
+if (linkCount == links.length) {
+%><li class="active"><%- linkData.label %></li><%
+} else {
+%><li><a href="#<%- linkData.link %>"><%- linkData.label %></a> <span class="divider">/</span></li><%
+}
+});
+print('</ul>');
+}
+})(links); %>
