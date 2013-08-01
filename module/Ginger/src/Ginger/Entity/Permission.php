@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Description of Permission
  * 
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Ginger\Repository\PermissionRepository")
  * @ORM\Table(name="permission") 
  * 
  * @author Alexander Miertsch <kontakt@codeliner.ws>
