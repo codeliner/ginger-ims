@@ -20,6 +20,10 @@ class Module
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
+        $checkActiveUserListener = $e->getApplication()
+            ->getServiceManager()->get('check_active_user_listener');
+        
+        $checkActiveUserListener->attach($eventManager);
     }
 
     public function getConfig()
