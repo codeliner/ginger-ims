@@ -205,6 +205,14 @@ return array(
             'module_loader' => function($sl) {
                 return $sl->get('entitymanager')->getRepository('Ginger\Entity\ModuleConfiguration');
             },
+            'user_loader' => 'Ginger\Service\UserLoader\OrmUserLoaderFactory',
+            'permissions_loader' => 'Ginger\Service\PermissionsLoader\OrmPermissionsLoaderFactory',
+            'usermanager' => function($sl) {
+                $usermanager = new \Ginger\Model\User\UserManager();
+                $usermanager->setUserLoader($sl->get('user_loader'));
+                $usermanager->setPermissionsLoader($sl->get('permissions_loader'));
+                return $usermanager;
+            },
             'FilterPluginManager' => function($sl) {
                 $config = $sl->get('configuration');
 
