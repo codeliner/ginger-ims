@@ -4,6 +4,7 @@ namespace Ginger\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\AbstractQuery;
 use Ginger\Model\User\PermissionsLoaderInterface;
+use Ginger\Model\User\Exception;
 use Ginger\Entity\Permission;
 
 /**
@@ -14,6 +15,9 @@ use Ginger\Entity\Permission;
  */
 class PermissionRepository extends EntityRepository implements PermissionsLoaderInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function loadPermissions($userId)
     {
         $permissions = $this->loadPermissionsEntities($userId);
@@ -21,17 +25,54 @@ class PermissionRepository extends EntityRepository implements PermissionsLoader
         $permissionsData = array();
         
         foreach ($permissions as $permission) {
-            $permissionsData[] = $this->extractPermissionData($permission);
+            $permissionsData[$permission->getJob()->getName()] 
+                = $this->extractPermissionData($permission);
         }
         
         return $permissionsData;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function savePermissions($userId, $jobname, $read = false, $write = false, $execute = false)
     {
-        //@todo implement this
+        $user = $this->getEntityManager()->getRepository('Ginger\Entity\User')
+            ->find($userId);
+        
+        if (!$user) {
+            throw new Exception\UnexpectedValueException(
+                sprintf(
+                    'User with id: "%s" can not be found.',
+                    $userId
+                    )
+                );
+        }
+        
+        $job = $this->getEntityManager()->getRepository('Ginger\Entity\Job')
+            ->findOneByName($jobname);
+        
+        if (!$job) {
+            throw new Exception\UnexpectedValueException(
+                sprintf(
+                    'Job with name: "%s" can not be found.',
+                    $jobname
+                    )
+                );
+        }
+        
+        $permission = new Permission($user, $job);
+        $permission->setRead($read);
+        $permission->setWrite($write);
+        $permission->setExecute($execute);
+        
+        $this->getEntityManager()->persist($permission);
+        $this->getEntityManager()->flush($permission);
     }    
     
+    /**
+     * {@inheritdoc}
+     */
     public function deletePermissions($userId)
     {
         $user = $this->getEntityManager()->getRepository('Ginger\Entity\User')->find($userId);
@@ -45,6 +86,11 @@ class PermissionRepository extends EntityRepository implements PermissionsLoader
         
     }
 
+    /**
+     * 
+     * @param int $userId
+     * @return Permission[]
+     */
     private function loadPermissionsEntities($userId)
     {
         $user = $this->getEntityManager()->getRepository('Ginger\Entity\User')
@@ -63,14 +109,17 @@ class PermissionRepository extends EntityRepository implements PermissionsLoader
         return $query->getQuery()->getResult();
     }
     
+    /**
+     * 
+     * @param \Ginger\Entity\Permission $permission
+     * @return array
+     */
     private function extractPermissionData(Permission $permission)
     {
         return array(
-            $permission->getJob()->getName() => array(
                 'read' => $permission->getRead(),
                 'write' => $permission->getWrite(),
                 'execute' => $permission->getExecute()
-            )
-        );
+            );
     }
 }
