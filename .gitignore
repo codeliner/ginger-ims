@@ -2,6 +2,7 @@ nbproject
 *~
 ._*
 .~lock.*
+*.log
 .buildpath
 .DS_Store
 .idea
