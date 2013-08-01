@@ -213,6 +213,15 @@ return array(
                 $usermanager->setPermissionsLoader($sl->get('permissions_loader'));
                 return $usermanager;
             },
+            'api_key_auth_adapter' => function($sl) {
+                return new \Ginger\Service\Auth\ApiKeyAdapter($sl->get('user_loader'));
+            },
+            'check_active_user_listener' => function($sl) {
+                $listener = new \Ginger\Service\ActiveUser\CheckActiveUserListener();
+                $listener->setUserManager($sl->get('usermanager'));
+                $listener->setAuthAdapter($sl->get('api_key_auth_adapter'));
+                return $listener;
+            },
             'FilterPluginManager' => function($sl) {
                 $config = $sl->get('configuration');
 
@@ -233,7 +242,7 @@ return array(
                 }
 
                 return $fP;
-            }
+            },
         ),
         'aliases' => array(
             'source_loader'  => 'element_loader',
