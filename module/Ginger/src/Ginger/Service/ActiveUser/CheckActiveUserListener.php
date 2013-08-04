@@ -3,6 +3,7 @@ namespace Ginger\Service\ActiveUser;
 
 use Ginger\Model\User\UserManager;
 use Ginger\Service\Auth\ApiKeyAdapter;
+use Codelinerjs\Javascript\Loader\AbstractLoader as JsLoader;
 use Zend\Mvc\MvcEvent;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -25,6 +26,12 @@ class CheckActiveUserListener implements ListenerAggregateInterface
      * @var ApiKeyAdapter
      */
     protected $authAdapter;
+    
+    /**
+     *
+     * @var JsLoader 
+     */
+    protected $jsLoader;
 
     /**
      *
@@ -50,7 +57,15 @@ class CheckActiveUserListener implements ListenerAggregateInterface
     {
         $this->authAdapter = $authAdapter;
     }
-
+    
+    /**
+     * 
+     * @param \Codelinerjs\Javascript\Loader\AbstractLoader $jsLoader
+     */
+    public function setJsLoader(JsLoader $jsLoader)
+    {
+        $this->jsLoader = $jsLoader;
+    }
         
     /**
      * 
@@ -94,24 +109,37 @@ class CheckActiveUserListener implements ListenerAggregateInterface
      */
     public function onDispatch(MvcEvent $e)
     {
-        $apiKey = $e->getRequest()->getHeader('api_key');
-        $requestHash = $e->getRequest()->getHeader('request_hash');
+        $apiKey = $e->getRequest()->getHeader('Api-Key', null);
+        $requestHash = $e->getRequest()->getHeader('Request-Hash', null);
         
+                
         //Set dummy user as active and return early when no user is registered
         if (!$this->userManager->hasUsers()) {
             $this->userManager->setActiveUser(UserManager::DUMMY_API_KEY);
             return;
         }
         
+        
+        
         if (is_null($apiKey) || is_null($requestHash)) {
-            return $e->getResponse()->setStatusCode(401)->setContent(
-                'Credentials missing. Please provide an api_key and a request_hash header parameter'
-                );
+            if ($e->getRequest()->isXmlHttpRequest()) {
+                return $e->getResponse()->setStatusCode(401)->setContent(
+                    'Credentials missing. Please provide an api_key and a request_hash header parameter'
+                    );
+            } else {
+                
+                //This flag is used in the Javascript\AppInitializer
+                $this->jsLoader->addUserVars(array(
+                    '$LOGIN_REQUIRED' => true
+                ));
+                return;
+            }
+            
         }
         
-        $this->authAdapter->setApiKey($apiKey);
-        $this->authAdapter->setRequestHash($requestHash);
-        $this->authAdapter->setRequestUri($e->getRequest()->getUri()->toString());
+        $this->authAdapter->setApiKey($apiKey->getFieldValue());
+        $this->authAdapter->setRequestHash($requestHash->getFieldValue());
+        $this->authAdapter->setRequestUri($e->getRequest()->getUri()->getPath());
         
         $authResult = $this->authAdapter->authenticate();
         
@@ -121,6 +149,6 @@ class CheckActiveUserListener implements ListenerAggregateInterface
                 );
         }
         
-        $this->userManager->setActiveUser($apiKey);
+        $this->userManager->setActiveUser($apiKey->getFieldValue());
     }
 }
