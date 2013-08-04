@@ -1,6 +1,5 @@
 var Ginger = $CL.namespace("Ginger");
 
-
 $CL.require("Cl.Application.Application");
 
 Ginger.AppInitializer = function(){};
@@ -51,7 +50,6 @@ Ginger.AppInitializer.prototype = {
         //The flag is set serverside in the CheckActiveUser dispatch listener
         //and indicate that credentials are required
         if ($CL.variable('$LOGIN_REQUIRED', false)) {
-            
             if (_.isNull($CL.get('auth_adapter').getActiveApiKey())) {
                 $CL.app().router.callRoute('application_auth_login');
                 return;
@@ -68,9 +66,7 @@ Ginger.AppInitializer.prototype = {
                 var moduleData = _.find($CL.variable('connect_modules', []), function(data) {
                     return hash.indexOf(data.module.toLowerCase() + "/") == 0;
                 });
-
-                $CL.log(moduleData);
-
+                
                 if (moduleData) {
                     $CL.get('application').lazyLoadModule(
                         moduleData.module,
