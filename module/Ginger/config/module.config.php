@@ -164,6 +164,18 @@ return array(
                     )
                 ),
             ),
+            'rest_users' => array(
+                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'options' => array(
+                    'route'    => '/rest/users[/:id]',
+                    'defaults' => array(
+                        'controller' => 'Ginger\Rest\Users',
+                    ),
+                    'constraints' => array(
+                        'id' => '[a-zA-Z0-9]+'
+                    )
+                ),
+            ),
             'configuration_export' => array(
                 'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
@@ -321,6 +333,11 @@ return array(
             'Ginger\Rest\Features' => function($cl) {
                 $c = new \Ginger\Rest\FeaturesService();
                 $c->setFeatureLoader($cl->getServiceLocator()->get('feature_loader'));
+                return $c;
+            },
+            'Ginger\Rest\Users' => function($cl) {
+                $c = new \Ginger\Rest\UsersService();
+                $c->setUserLoader($cl->getServiceLocator()->get('user_loader'));
                 return $c;
             },
         ),
