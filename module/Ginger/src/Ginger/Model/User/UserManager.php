@@ -3,6 +3,7 @@ namespace Ginger\Model\User;
 
 use Ginger\Job\Job;
 use Ginger\Service\Acl\PermissionProviderInterface;
+
 /**
  * Description of UserManager
  *
@@ -11,6 +12,8 @@ use Ginger\Service\Acl\PermissionProviderInterface;
  */
 class UserManager implements PermissionProviderInterface
 {
+    const DUMMY_API_KEY = 'dummy';
+    
     /**
      *
      * @var UserLoaderInterface 
@@ -28,6 +31,32 @@ class UserManager implements PermissionProviderInterface
      * @var User
      */
     protected $activeUser;
+    
+    /**
+     *
+     * @var bool
+     */
+    protected $hasUsers;
+
+
+    /**
+     * If "dummy" is provided as apiKey in method @see setActiveUser, this
+     * data is used to initialize an user object.
+     * 
+     * The dummy user is treated as an admin and can only be used, when no
+     * users are registered in the system (@see hasUsers returns false)
+     * 
+     * @var array
+     */
+    protected $dummyData = array(
+        'id' => -1,
+        'apiKey' => 'dummy',
+        'secretKey' => 'dummy',
+        'lastname' => 'dummy',
+        'firstname' => 'dummy',
+        'email' => 'dummy',
+        'isAdmin' => true
+    );
 
 
     public function setUserLoader(UserLoaderInterface $userLoader)
@@ -47,7 +76,11 @@ class UserManager implements PermissionProviderInterface
      */
     public function hasUsers()
     {
-        return $this->userLoader->hasUsers();
+        if (is_null($this->hasUsers)) {
+            $this->hasUsers = $this->userLoader->hasUsers();
+        }
+        
+        return $this->hasUsers;
     }
         
     /**
@@ -81,7 +114,14 @@ class UserManager implements PermissionProviderInterface
      */
     public function setActiveUser($apiKey)
     {
-        $userdata = $this->userLoader->loadUserByApiKey($apiKey);
+        $userdata = array();
+        
+        if (!$this->hasUsers() && $apiKey == static::DUMMY_API_KEY) {
+            $userdata = $this->dummyData;
+        } else {
+            $userdata = $this->userLoader->loadUserByApiKey($apiKey);
+        }
+        
         
         if (!$userdata) {
             throw new Exception\InvalidArgumentException(

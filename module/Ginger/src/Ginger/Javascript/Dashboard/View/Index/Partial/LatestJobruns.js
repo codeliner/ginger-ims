@@ -5,6 +5,7 @@ $CL.require('Cl.Backbone.View');
 Partial.LatestJobruns = function() {};
 
 Partial.LatestJobruns = $CL.extendClass(Partial.LatestJobruns, Cl.Backbone.View, {
+    data : null,
     events : {
         'click .js-jobrun-row .js-show-details' : 'onShowDetailsClick',
         'click .js-jobrun-details .js-remove' : 'onRemoveJobrunClick'
