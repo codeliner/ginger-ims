@@ -220,6 +220,7 @@ return array(
                 $listener = new \Ginger\Service\ActiveUser\CheckActiveUserListener();
                 $listener->setUserManager($sl->get('usermanager'));
                 $listener->setAuthAdapter($sl->get('api_key_auth_adapter'));
+                $listener->setJsLoader($sl->get('codelinerjs.js_loader'));
                 return $listener;
             },
             'FilterPluginManager' => function($sl) {
@@ -368,6 +369,7 @@ return array(
                 'dashboard_main'                             => 'ginger/dashboard/main',
                 'dashboard_module'                           => 'ginger/dashboard/partial/module',
                 'dashboard_latest_jobruns'                   => 'ginger/dashboard/partial/latest-jobruns',
+                'application_auth_login'                     => 'ginger/application/auth/login',
                 'application_breadcrumbs'                    => 'ginger/helpers/breadcrumbs',
                 'application_structure_mapper_options'       => 'ginger/application/partial/structure-mapper-options',
                 'application_sourcefile_options'             => 'ginger/application/partial/source-file-options',

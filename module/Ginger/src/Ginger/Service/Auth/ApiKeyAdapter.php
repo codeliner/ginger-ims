@@ -62,7 +62,7 @@ class ApiKeyAdapter implements AdapterInterface
      * 
      * The hash is generated with the secret key assigned to the provided apiKey.
      * 
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function authenticate()
     {
@@ -73,7 +73,7 @@ class ApiKeyAdapter implements AdapterInterface
         }
         
         $checkHash = hash_hmac('sha1', $this->requestUri, $userData['secretKey']);
-        
+
         if ($checkHash != $this->requestHash) {
             return new AuthResult(AuthResult::FAILURE_CREDENTIAL_INVALID, null);
         }
