@@ -26,51 +26,127 @@ class PermissionRepositoryTest extends DoctrineTestCase
         $this->createEntitySchema('Ginger\Entity\Job');
         $this->createEntitySchema('Ginger\Entity\Permission');
         $this->object = $this->getTestEntityManager()->getRepository('Ginger\Entity\Permission');
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
         
+        $user = new Entity\User();
+        
+        $user->setId(1);
+        $user->setApiKey('1234api');
+        $user->setSecretKey('5678secret');
+        $user->setLastname('Mustermann');
+        $user->setFirstname('Max');
+        $user->setEmail('m.mustermann@company.com');
+        $user->setIsAdmin(false);
+        
+        $this->getTestEntityManager()->persist($user);
+        
+        $user2 = new Entity\User();
+        $user2->setId(2);
+        $user2->setApiKey('555api');
+        $user2->setSecretKey('666secret');
+        $user2->setLastname('Doe');
+        $user2->setFirstname('John');
+        $user2->setEmail('j.doe@company.com');
+        $user2->setIsAdmin(false);
+        
+        $this->getTestEntityManager()->persist($user2);
+        
+        $articleJob = new Entity\Job();
+        $articleJob->setName('Article Transfer');
+        
+        $this->getTestEntityManager()->persist($articleJob);
+        
+        $orderJob = new Entity\Job();        
+        $orderJob->setName('Order Transfer');
+        
+        $this->getTestEntityManager()->persist($orderJob);
+        
+        $this->getTestEntityManager()->flush();
+        
+        $user1ArticlePermission = new Entity\Permission($user, $articleJob);
+        
+        $user1ArticlePermission->setExecute(true);
+        $user1ArticlePermission->setRead(false);
+        $user1ArticlePermission->setWrite(false);
+        
+        $this->getTestEntityManager()->persist($user1ArticlePermission);
+        
+        $user1OrderPermission = new Entity\Permission($user, $orderJob);
+        $user1OrderPermission->setRead(true);
+        $user1OrderPermission->setWrite(true);
+        $user1OrderPermission->setExecute(false);
+        
+        $this->getTestEntityManager()->persist($user1OrderPermission);
+        $this->getTestEntityManager()->flush();
     }
 
     /**
      * @covers Ginger\Repository\PermissionRepository::loadPermissions
-     * @todo   Implement testLoadPermissions().
      */
     public function testLoadPermissions()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $permissions = $this->object->loadPermissions(1);
+        $check = array(
+            'Article Transfer' => array(
+                'read' => false,
+                'write' => false,
+                'execute' => true
+            ),
+            'Order Transfer' => array(
+                'read' => true,
+                'write' => true,
+                'execute' => false
+            )
         );
+        
+        $this->assertEquals($check, $permissions);
+        
+        $permissions2 = $this->object->loadPermissions(2);
+        
+        $this->assertEquals(array(), $permissions2);
     }
 
     /**
      * @covers Ginger\Repository\PermissionRepository::savePermissions
-     * @todo   Implement testSavePermissions().
      */
     public function testSavePermissions()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $this->object->savePermissions(2, 'Order Transfer', true);
+        
+        $permssions = $this->object->loadPermissions(2);
+        
+        $check = array(
+            'Order Transfer' => array(
+                'read' => true,
+                'write' => false,
+                'execute' => false
+            )
         );
+        
+        $this->assertEquals($check, $permssions);
     }
 
     /**
      * @covers Ginger\Repository\PermissionRepository::deletePermissions
-     * @todo   Implement testDeletePermissions().
      */
     public function testDeletePermissions()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
+        $this->object->savePermissions(2, 'Order Transfer', true);
+        
+        $this->object->deletePermissions(1);
+        
+        $this->assertEmpty($this->object->loadPermissions(1));
+        
+        $permssions = $this->object->loadPermissions(2);
+        
+        $check = array(
+            'Order Transfer' => array(
+                'read' => true,
+                'write' => false,
+                'execute' => false
+            )
         );
+        
+        $this->assertEquals($check, $permssions);
     }
 
 }
