@@ -205,6 +205,24 @@ return array(
             'module_loader' => function($sl) {
                 return $sl->get('entitymanager')->getRepository('Ginger\Entity\ModuleConfiguration');
             },
+            'user_loader' => 'Ginger\Service\UserLoader\OrmUserLoaderFactory',
+            'permissions_loader' => 'Ginger\Service\PermissionsLoader\OrmPermissionsLoaderFactory',
+            'usermanager' => function($sl) {
+                $usermanager = new \Ginger\Model\User\UserManager();
+                $usermanager->setUserLoader($sl->get('user_loader'));
+                $usermanager->setPermissionsLoader($sl->get('permissions_loader'));
+                return $usermanager;
+            },
+            'api_key_auth_adapter' => function($sl) {
+                return new \Ginger\Service\Auth\ApiKeyAdapter($sl->get('user_loader'));
+            },
+            'check_active_user_listener' => function($sl) {
+                $listener = new \Ginger\Service\ActiveUser\CheckActiveUserListener();
+                $listener->setUserManager($sl->get('usermanager'));
+                $listener->setAuthAdapter($sl->get('api_key_auth_adapter'));
+                $listener->setJsLoader($sl->get('codelinerjs.js_loader'));
+                return $listener;
+            },
             'FilterPluginManager' => function($sl) {
                 $config = $sl->get('configuration');
 
@@ -225,7 +243,7 @@ return array(
                 }
 
                 return $fP;
-            }
+            },
         ),
         'aliases' => array(
             'source_loader'  => 'element_loader',
@@ -351,6 +369,7 @@ return array(
                 'dashboard_main'                             => 'ginger/dashboard/main',
                 'dashboard_module'                           => 'ginger/dashboard/partial/module',
                 'dashboard_latest_jobruns'                   => 'ginger/dashboard/partial/latest-jobruns',
+                'application_auth_login'                     => 'ginger/application/auth/login',
                 'application_breadcrumbs'                    => 'ginger/helpers/breadcrumbs',
                 'application_structure_mapper_options'       => 'ginger/application/partial/structure-mapper-options',
                 'application_sourcefile_options'             => 'ginger/application/partial/source-file-options',

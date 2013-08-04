@@ -15,6 +15,8 @@ class UserManagerTest extends \PHPUnit_Framework_TestCase
     protected $object;
     
     protected $permissionsLoader;
+    
+    protected $userLoader;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -24,8 +26,8 @@ class UserManagerTest extends \PHPUnit_Framework_TestCase
     {
         $this->object = new UserManager;
         
-        $userLoader = new \MockObject\UserLoaderMock();
-        $userLoader->setUsersData(array(
+        $this->userLoader = new \MockObject\UserLoaderMock();
+        $this->userLoader->setUsersData(array(
             0 => array(
                 'id' => 0,
                 'apiKey' => '12345key',
@@ -37,7 +39,7 @@ class UserManagerTest extends \PHPUnit_Framework_TestCase
             )
         ));
         
-        $this->object->setUserLoader($userLoader);
+        $this->object->setUserLoader($this->userLoader);
         
         $this->permissionsLoader = new \MockObject\UserPermissionsLoaderMock();
         
@@ -102,6 +104,26 @@ class UserManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('mustermann', $user->getLastname());
         $this->assertEquals('max', $user->getFirstname());
         $this->assertEquals('m.mustermann@company.com', $user->getEmail());
+    }
+    
+    public function testSetActiveDummyUser()
+    {
+        $this->userLoader->setUsersData(array());
+        
+        $this->object->setActiveUser(UserManager::DUMMY_API_KEY);
+        
+        $dummyUser = $this->object->getActiveUser();
+        
+        $this->assertEquals('dummy', $dummyUser->getLastname());
+        $this->assertTrue($dummyUser->isAdmin());
+    }
+    
+    /**
+     * @expectedException Ginger\Model\User\Exception\InvalidArgumentException
+     */
+    public function testDoNotSetActiveDummyUserWhenOthersAreRegistered()
+    {
+        $this->object->setActiveUser(UserManager::DUMMY_API_KEY);
     }
     
     /**

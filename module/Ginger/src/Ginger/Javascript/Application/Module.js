@@ -1,5 +1,7 @@
 var Application = $CL.namespace("Ginger.Application");
 
+$CL.require("Cl.Core.String");
+$CL.require("Cl.Core.Date");
 $CL.require("Cl.Application.Module.ModuleInterface");
 $CL.require("Cl.Backbone.ViewRenderingStrategy");
 $CL.require("Cl.Backbone.Layout");
@@ -7,8 +9,10 @@ $CL.require("Cl.Jquery.Plugin.Scroll.To");
 $CL.require("Cl.Jquery.Plugin.Effect.Core");
 //controllers
 $CL.require("Ginger.Application.Controller.ModuleLoader");
+$CL.require("Ginger.Application.Controller.Auth");
 //services
 $CL.require("Ginger.Application.Service.ModuleElement.ElementLoader");
+$CL.require("Ginger.Application.Service.Auth.Adapter");
 //collections
 $CL.require('Ginger.Application.Collection.Modules');
 //models
@@ -23,7 +27,10 @@ $CL.require("Ginger.Application.Model.Feature.ValidatorFeature");
 $CL.require("Ginger.Application.Model.Feature.FilterFeature");
 $CL.require("Ginger.Application.Model.Feature.AttributeMapFeature");
 $CL.require("Ginger.Application.Model.Feature.StaticValueFeature");
+//forms
+$CL.require("Ginger.Application.Form.Login");
 //Views
+$CL.require("Ginger.Application.View.Auth.Login");
 $CL.require("Ginger.Application.View.Helper.Breadcrumbs");
 $CL.require("Ginger.Application.View.Partial.StructureMapperOptions");
 $CL.require("Ginger.Application.View.Partial.SourcefileOptions");
@@ -70,6 +77,22 @@ Application.Module.prototype = {
                             .replace(':moduleName', routeParams.moduleName)
                             .replace(':gotoRoute', routeParams.gotoRoute);
                         }
+                    },
+                    'application_auth_login' : {
+                        route : 'application/auth/login',
+                        callback : function() {
+                            return $CL.makeObj(
+                                "Cl.Application.Router.RouteMatch",
+                                {
+                                    module : "Ginger.Application.Module",
+                                    controller : "auth",
+                                    action : "login",
+                                }
+                            );
+                        },
+                        build : function(routeParams) {
+                            return this.route;
+                        }
                     }
                 },
                 history : {
@@ -88,6 +111,12 @@ Application.Module.prototype = {
             },
             service_manager : {
                 factories : {
+                    //controllers
+                    'Ginger.Application.Controller.Auth' : function(sl) {
+                        var c = $CL.makeObj('Ginger.Application.Controller.Auth');
+                        c.setAuthAdapter(sl.get('auth_adapter'));
+                        return c;
+                    },                    
                     //models
                     //be aware of the missing Application namespace in mapper alias. It's important,
                     //cause otherwise autoloading of mapper in configuration edit doesn't work.
@@ -200,7 +229,16 @@ Application.Module.prototype = {
                     'module_element_loader' : function(sl) {
                         return $CL.makeObj('Ginger.Application.Service.ModuleElement.ElementLoader');
                     },
+                    'auth_adapter' : function(sl) {
+                        return $CL.makeObj("Ginger.Application.Service.Auth.Adapter");
+                    },
                     //views
+                    "Ginger.Application.View.Auth.Login" : function(sl) {
+                        var v = $CL.makeObj('Ginger.Application.View.Auth.Login');
+                        v.setForm(sl.get('Ginger.Application.Form.Login'));
+                        v.setTemplate($CL._template('application_auth_login'));
+                        return v;
+                    },
                     "Ginger.Application.View.Helper.Breadcrumbs" : function(sl) {
                         var v = $CL.makeObj("Ginger.Application.View.Helper.Breadcrumbs");
                         v.setTemplate($CL._template('application_breadcrumbs'));
@@ -358,6 +396,100 @@ Application.Module.prototype = {
         $(window).resize(function() {
             _checkSidebar();
         });
+        
+        //set some global stuff for templates
+        window.helpers = {
+            uri : function(route, params) {
+                return $CL.get("application").router.getUri(route, params);
+            },
+            datetime : function(dbDateStr) {
+                if (!dbDateStr) {
+                    return "-";
+                }
+                var dbDate = Date.parseDate(dbDateStr, Date.getDbStrFmt(true)),
+                dbStr = dbDate.toString(true);
+
+                if (dbDate.getHours() > 11) {
+                    dbStr += " " + $CL.translate('GENERAL::TIME::AM');
+                } else {
+                    dbStr += " " + $CL.translate('GENERAL::TIME::PM');
+                }
+
+                return dbStr;
+            },
+            time : function(dbDateStr) {
+                if (!dbDateStr) {
+                    return "-";
+                }
+                var dbDate = Date.parseDate(dbDateStr, Date.getDbStrFmt(true)),
+                dbStr = dbDate.toString(true, true);
+
+                if (dbDate.getHours() > 11) {
+                    dbStr += " " + $CL.translate('GENERAL::TIME::AM');
+                } else {
+                    dbStr += " " + $CL.translate('GENERAL::TIME::PM');
+                }
+
+                return dbStr;
+            },
+            duration : function(start, end) {
+                if (!start || !end) {
+                    return "-";
+                }
+                var startDate = Date.parseDate(start, Date.getDbStrFmt(true)),
+                endDate = Date.parseDate(end, Date.getDbStrFmt(true)),
+                duration = endDate.toTimestamp() - startDate.toTimestamp(),
+                durationStr = "",
+                h = 0, min = 0, sec = 0;
+
+                if (duration > 0) {
+                    if (duration < 60) {
+                        sec = duration;
+                    } else {
+                        min = Math.floor(duration / 60);
+                        sec = duration % 60;
+
+                        if (min > 59) {
+                            h = Math.floor(min / 60);
+                            min = min % 60;
+                        }
+                    }
+                }
+
+                if (h > 0) {
+                    durationStr += h + " h ";
+                }
+
+                if (min > 0) {
+                    durationStr += min + " min ";
+                }
+
+                durationStr += sec + " s";
+
+                return durationStr;
+            },
+            wrapVisibleSpans : function(text, separator) {
+                var textParts = text.split(separator);
+
+                var newText = "";
+
+                _.each(textParts, function(part, i) {
+                   newText += '<span '
+                       + ((i+1 < textParts.length)? 'class="visible-large-desktop"' : '')
+                       + '>'
+                       + part
+                       + ((i+1 < textParts.length)? separator : '')
+                       + '</span>';
+                });
+
+                return newText;
+            }
+        };
+        
+        //Register Auth Adpater to listen on ajax calls
+        //and inject Api-Key and Request-Hash headers
+        var authAdapter = $CL.get('auth_adapter');
+        $CL.attachBeforeAjaxSend($CL.bind(authAdapter.onBeforeAjaxSend, authAdapter));
     },
     getController : function(controllerName) {
         controllerName = controllerName.ucfirst();
