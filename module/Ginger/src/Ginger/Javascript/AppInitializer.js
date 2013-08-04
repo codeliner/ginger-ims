@@ -1,102 +1,12 @@
 var Ginger = $CL.namespace("Ginger");
 
-$CL.require("Cl.Core.String");
-$CL.require("Cl.Core.Date");
+
 $CL.require("Cl.Application.Application");
 
 Ginger.AppInitializer = function(){};
 
 Ginger.AppInitializer.prototype = {
     init : function() {
-        //set some global stuff for templates
-        window.helpers = {
-            uri : function(route, params) {
-                return $CL.get("application").router.getUri(route, params);
-            },
-            datetime : function(dbDateStr) {
-                if (!dbDateStr) {
-                    return "-";
-                }
-                var dbDate = Date.parseDate(dbDateStr, Date.getDbStrFmt(true)),
-                dbStr = dbDate.toString(true);
-
-                if (dbDate.getHours() > 11) {
-                    dbStr += " " + $CL.translate('GENERAL::TIME::AM');
-                } else {
-                    dbStr += " " + $CL.translate('GENERAL::TIME::PM');
-                }
-
-                return dbStr;
-            },
-            time : function(dbDateStr) {
-                if (!dbDateStr) {
-                    return "-";
-                }
-                var dbDate = Date.parseDate(dbDateStr, Date.getDbStrFmt(true)),
-                dbStr = dbDate.toString(true, true);
-
-                if (dbDate.getHours() > 11) {
-                    dbStr += " " + $CL.translate('GENERAL::TIME::AM');
-                } else {
-                    dbStr += " " + $CL.translate('GENERAL::TIME::PM');
-                }
-
-                return dbStr;
-            },
-            duration : function(start, end) {
-                if (!start || !end) {
-                    return "-";
-                }
-                var startDate = Date.parseDate(start, Date.getDbStrFmt(true)),
-                endDate = Date.parseDate(end, Date.getDbStrFmt(true)),
-                duration = endDate.toTimestamp() - startDate.toTimestamp(),
-                durationStr = "",
-                h = 0, min = 0, sec = 0;
-
-                if (duration > 0) {
-                    if (duration < 60) {
-                        sec = duration;
-                    } else {
-                        min = Math.floor(duration / 60);
-                        sec = duration % 60;
-
-                        if (min > 59) {
-                            h = Math.floor(min / 60);
-                            min = min % 60;
-                        }
-                    }
-                }
-
-                if (h > 0) {
-                    durationStr += h + " h ";
-                }
-
-                if (min > 0) {
-                    durationStr += min + " min ";
-                }
-
-                durationStr += sec + " s";
-
-                return durationStr;
-            },
-            wrapVisibleSpans : function(text, separator) {
-                var textParts = text.split(separator);
-
-                var newText = "";
-
-                _.each(textParts, function(part, i) {
-                   newText += '<span '
-                       + ((i+1 < textParts.length)? 'class="visible-large-desktop"' : '')
-                       + '>'
-                       + part
-                       + ((i+1 < textParts.length)? separator : '')
-                       + '</span>';
-                });
-
-                return newText;
-            }
-        };
-
         $CL.log('loaded modules: ', $APPLICATION_MODULES);
         
         var application = $CL.makeObj("Cl.Application.Application", {
@@ -137,6 +47,16 @@ Ginger.AppInitializer.prototype = {
         window.location.hash = "";
 
         application.bootstrap().run();
+        
+        //The flag is set serverside in the CheckActiveUser dispatch listener
+        //and indicate that credentials are required
+        if ($CL.variable('$LOGIN_REQUIRED', false)) {
+            
+            if (_.isNull($CL.get('auth_adapter').getActiveApiKey())) {
+                $CL.app().router.callRoute('application_auth_login');
+                return;
+            }
+        }
 
         if (hash == "") {
             $CL.get("application").router.callRoute('dashboard');

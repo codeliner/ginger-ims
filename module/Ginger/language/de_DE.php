@@ -60,6 +60,10 @@ return array(
     'FORM::BUTTON::SAVE'       => 'speichern',
     //Form Error Msgs
     'Value is empty!' => 'Bitte geben Sie einen Wert ein!',
+    //Login
+    'HEADLINE::LOGIN' => 'Ginger IMS Login',
+    'LOGIN::FORM::LABEL::USERNAME' => 'Username',
+    'LOGIN::FORM::LABEL::PASSWORD' => 'Passwort',
     //Jobs
     'HEADLINE::JOBS'                         => 'Jobs',
     'HEADLINE::JOBS::ADD'                    => 'Job hinzufügen',
