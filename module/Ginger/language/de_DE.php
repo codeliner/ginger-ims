@@ -62,7 +62,7 @@ return array(
     'Value is empty!' => 'Bitte geben Sie einen Wert ein!',
     //Login
     'HEADLINE::LOGIN' => 'Ginger IMS Login',
-    'LOGIN::FORM::LABEL::USERNAME' => 'Username',
+    'LOGIN::FORM::LABEL::EMAIL' => 'eMail',
     'LOGIN::FORM::LABEL::PASSWORD' => 'Passwort',
     //Jobs
     'HEADLINE::JOBS'                         => 'Jobs',
