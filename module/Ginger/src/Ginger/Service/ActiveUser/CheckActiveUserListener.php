@@ -112,6 +112,10 @@ class CheckActiveUserListener implements ListenerAggregateInterface
         $apiKey = $e->getRequest()->getHeader('Api-Key', null);
         $requestHash = $e->getRequest()->getHeader('Request-Hash', null);
         
+        if ($e->getRouteMatch()->getParam('controller') == "Codelinerjs\Controller\LazyModule") {
+            return;
+        }
+        
                 
         //Set dummy user as active and return early when no user is registered
         if (!$this->userManager->hasUsers()) {
