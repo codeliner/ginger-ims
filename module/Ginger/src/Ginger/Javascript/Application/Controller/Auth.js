@@ -14,7 +14,7 @@ Controller.Auth = $CL.extendClass(Controller.Auth, Cl.Application.Mvc.AbstractCo
         var v = $CL.get('Ginger.Application.View.Auth.Login');
         
         v.setSubmitCallback($CL.bind(function(data) {
-            this.authAdapter.setUsername(data.username);
+            this.authAdapter.setUsername(data.email);
             this.authAdapter.setPassword(data.password);
             
             $CL.app().router.callRoute('dashboard');
