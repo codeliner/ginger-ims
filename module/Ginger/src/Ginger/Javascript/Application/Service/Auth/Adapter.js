@@ -44,5 +44,7 @@ Auth.Adapter.prototype = {
     clearCredentials : function() {
         $.store.remove('api_key');
         $.store.remove('secret_key');
+        this.activeApiKey = null;
+        this.activeSecretKey = null;
     }
 };

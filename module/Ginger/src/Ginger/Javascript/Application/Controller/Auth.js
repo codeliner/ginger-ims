@@ -7,8 +7,12 @@ Controller.Auth = function() {};
 
 Controller.Auth = $CL.extendClass(Controller.Auth, Cl.Application.Mvc.AbstractController, {
     authAdapter : null,
+    userManager : null,
     setAuthAdapter : function(authAdapter) {
         this.authAdapter = authAdapter;
+    },
+    setUserManager : function(userManager) {
+        this.userManager = userManager;
     },
     loginAction : function() {
         var v = $CL.get('Ginger.Application.View.Auth.Login');
@@ -21,5 +25,10 @@ Controller.Auth = $CL.extendClass(Controller.Auth, Cl.Application.Mvc.AbstractCo
         }, this));
         
         return v;
+    },
+    logoutAction : function() {
+        this.getMvcEvent().stopPropagation();
+        this.userManager.logoutUser();
+        $CL.app().router.callRoute('application_auth_login');
     }
 });
