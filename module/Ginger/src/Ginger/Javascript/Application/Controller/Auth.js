@@ -29,6 +29,6 @@ Controller.Auth = $CL.extendClass(Controller.Auth, Cl.Application.Mvc.AbstractCo
     logoutAction : function() {
         this.getMvcEvent().stopPropagation();
         this.userManager.logoutUser();
-        $CL.app().router.callRoute('application_auth_login');
+        window.location.reload();
     }
 });
