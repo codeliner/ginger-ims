@@ -172,7 +172,7 @@ return array(
                         'controller' => 'Ginger\Rest\Users',
                     ),
                     'constraints' => array(
-                        'id' => '[a-zA-Z0-9]+'
+                        'id' => '[a-zA-Z0-9-]+'
                     )
                 ),
             ),
@@ -338,6 +338,7 @@ return array(
             'Ginger\Rest\Users' => function($cl) {
                 $c = new \Ginger\Rest\UsersService();
                 $c->setUserLoader($cl->getServiceLocator()->get('user_loader'));
+                $c->setUserManager($cl->getServiceLocator()->get('usermanager'));
                 return $c;
             },
         ),
@@ -387,6 +388,7 @@ return array(
                 'dashboard_module'                           => 'ginger/dashboard/partial/module',
                 'dashboard_latest_jobruns'                   => 'ginger/dashboard/partial/latest-jobruns',
                 'application_auth_login'                     => 'ginger/application/auth/login',
+                'application_nav_active_user'                => 'ginger/application/partial/nav-active-user',
                 'application_breadcrumbs'                    => 'ginger/helpers/breadcrumbs',
                 'application_structure_mapper_options'       => 'ginger/application/partial/structure-mapper-options',
                 'application_sourcefile_options'             => 'ginger/application/partial/source-file-options',
