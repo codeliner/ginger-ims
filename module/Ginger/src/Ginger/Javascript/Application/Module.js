@@ -530,9 +530,12 @@ Application.Module.prototype = {
         };
         
         //Register Auth Adpater to listen on ajax calls
-        //and inject Api-Key and Request-Hash headers
+        //to inject Api-Key and Request-Hash headers
         var authAdapter = $CL.get('auth_adapter');
         $CL.attachBeforeAjaxSend($CL.bind(authAdapter.onBeforeAjaxSend, authAdapter));
+        //also register Auth Adapter to listen on application.alert events
+        //to check if a response failed with status 401 
+        $CL.app().events().attach('alert', [authAdapter.onAppAlert, authAdapter]);
     },
     getController : function(controllerName) {
         controllerName = controllerName.ucfirst();

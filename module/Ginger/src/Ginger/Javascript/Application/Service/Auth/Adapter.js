@@ -40,6 +40,15 @@ Auth.Adapter.prototype = {
             jqXhr.setRequestHeader('Api-Key', this.getActiveApiKey());
             jqXhr.setRequestHeader('Request-Hash', requestHash);
         }
+        
+        jqXhr.fail(this.onAjaxFailure);
+    },
+    onAppAlert : function(e) {
+        if (!_.isNull(e.getParam('jqX'))) {
+            if (e.getParam('jqX').status === 401) {
+                window.location.reload();
+            }
+        }
     },
     clearCredentials : function() {
         $.store.remove('api_key');
