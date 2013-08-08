@@ -34,11 +34,15 @@ Auth.Adapter.prototype = {
         if (!_.isNull(this.getActiveApiKey()) 
             && !_.isNull(this.getActiveSecretKey())) {
             var requestHash = CryptoJS.HmacSHA1(
-                request.url, 
+                decodeURI(request.url), 
                 this.getActiveSecretKey());
                 
             jqXhr.setRequestHeader('Api-Key', this.getActiveApiKey());
             jqXhr.setRequestHeader('Request-Hash', requestHash);
         }
+    },
+    clearCredentials : function() {
+        $.store.remove('api_key');
+        $.store.remove('secret_key');
     }
 };

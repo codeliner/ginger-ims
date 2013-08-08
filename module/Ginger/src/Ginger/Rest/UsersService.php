@@ -4,6 +4,7 @@ namespace Ginger\Rest;
 use Cl\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Ginger\Model\User\UserLoaderInterface;
+use Ginger\Model\User\UserManager;
 /**
  * Description of UsersService
  * 
@@ -19,6 +20,13 @@ class UsersService extends AbstractRestfulController
     protected $userLoader;
     
     /**
+     *
+     * @var UserManager 
+     */
+    protected $userManager;
+
+
+    /**
      * 
      * @param \Ginger\Model\User\UserLoaderInterface $userLoader
      */
@@ -26,7 +34,16 @@ class UsersService extends AbstractRestfulController
     {
         $this->userLoader = $userLoader;
     }
-
+    
+    /**
+     * 
+     * @param \Ginger\Model\User\UserManager $userManager
+     */
+    public function setUserManager(UserManager $userManager)
+    {
+        $this->userManager = $userManager;
+    }
+    
         
     public function create($data)
     {
@@ -44,8 +61,32 @@ class UsersService extends AbstractRestfulController
         return new JsonModel(array('success' => true));
     }
 
+    /**
+     * Get user by id
+     * 
+     * If -1 is passed as userId, the service returns the active user
+     * identified by the Api-Key and Request-Hash HTTP-Headers
+     * 
+     * @param string $id
+     * @return \Zend\View\Model\JsonModel
+     */
     public function get($id)
-    {
+    {       
+        if ($id == '-1') {           
+            $activeUser = $this->userManager->getActiveUser();
+            if ($activeUser) {
+                $data = array(
+                    'id' => $activeUser->getId(),
+                    'lastname' => $activeUser->getLastname(),
+                    'firstname' => $activeUser->getFirstname(),
+                    'email' => $activeUser->getEmail(),
+                    'isAdmin' => $activeUser->isAdmin(),
+                );
+                
+                return new JsonModel($data);
+            }
+        }
+        
         $data = $this->userLoader->loadUser($id);
         
         if ($data) {

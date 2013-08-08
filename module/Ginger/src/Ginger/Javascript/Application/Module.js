@@ -15,7 +15,9 @@ $CL.require("Ginger.Application.Service.ModuleElement.ElementLoader");
 $CL.require("Ginger.Application.Service.Auth.Adapter");
 //collections
 $CL.require('Ginger.Application.Collection.Modules');
+$CL.require('Ginger.Application.Collection.Users');
 //models
+$CL.require("Ginger.Application.Model.User.UserManager");
 $CL.require("Ginger.Application.Model.Mapper.StructureMapper");
 $CL.require("Ginger.Application.Model.File.SourceFile");
 $CL.require("Ginger.Application.Model.Directory.SourceDirectory");
@@ -31,6 +33,7 @@ $CL.require("Ginger.Application.Model.Feature.StaticValueFeature");
 $CL.require("Ginger.Application.Form.Login");
 //Views
 $CL.require("Ginger.Application.View.Auth.Login");
+$CL.require("Ginger.Application.View.Partial.ActiveUser");
 $CL.require("Ginger.Application.View.Helper.Breadcrumbs");
 $CL.require("Ginger.Application.View.Partial.StructureMapperOptions");
 $CL.require("Ginger.Application.View.Partial.SourcefileOptions");
@@ -219,6 +222,14 @@ Application.Module.prototype = {
                         m.setHelpView(sl.get('Ginger.Application.View.Partial.StaticValueFeatureHelp'));
                         return m;
                     },
+                    'user_manager' : function(sl) {
+                        var um = $CL.makeObj('Ginger.Application.Model.User.UserManager');
+                        
+                        um.setAuthAdapter(sl.get('auth_adapter'));
+                        um.setUsersCollection(sl.get('Ginger.Application.Collection.Users'));
+                        
+                        return um;
+                    },
                     //Collections
                     'Ginger.Application.Collection.Modules' : function(sl) {
                         var c = $CL.makeObj('Ginger.Application.Collection.Modules');
@@ -237,6 +248,11 @@ Application.Module.prototype = {
                         var v = $CL.makeObj('Ginger.Application.View.Auth.Login');
                         v.setForm(sl.get('Ginger.Application.Form.Login'));
                         v.setTemplate($CL._template('application_auth_login'));
+                        return v;
+                    },
+                    "Ginger.Application.View.Partial.ActiveUser" : function(sl) {
+                        var v = $CL.makeObj("Ginger.Application.View.Partial.ActiveUser");
+                        v.setTemplate($CL._template('application_nav_active_user'));
                         return v;
                     },
                     "Ginger.Application.View.Helper.Breadcrumbs" : function(sl) {
@@ -310,6 +326,16 @@ Application.Module.prototype = {
             var layout = e.getResponse();
 
             if (layout && $CL.isInstanceOf(layout, Cl.Backbone.Layout)) {
+                var activeUser = $CL.get('user_manager').getActiveUser();
+                
+                if (activeUser){
+                    var uv = $CL.get('Ginger.Application.View.Partial.ActiveUser');
+                    uv.setElement($('#head-nav-right'));
+                    uv.setData(activeUser.toJSON());
+                    uv.render();
+                    layout.addChild(uv);
+                }                
+                
                 var b = $CL.get("Ginger.Application.View.Helper.Breadcrumbs");
                 b.setData(e.getParam('breadcrumbs', []));
                 layout.addChild(b);
