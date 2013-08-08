@@ -96,6 +96,22 @@ Application.Module.prototype = {
                         build : function(routeParams) {
                             return this.route;
                         }
+                    },
+                    'application_auth_logout' : {
+                        route : 'application/auth/logout',
+                        callback : function() {
+                            return $CL.makeObj(
+                                "Cl.Application.Router.RouteMatch",
+                                {
+                                    module : "Ginger.Application.Module",
+                                    controller : "auth",
+                                    action : "logout",
+                                }
+                            );
+                        },
+                        build : function(routeParams) {
+                            return this.route;
+                        }
                     }
                 },
                 history : {
@@ -118,6 +134,7 @@ Application.Module.prototype = {
                     'Ginger.Application.Controller.Auth' : function(sl) {
                         var c = $CL.makeObj('Ginger.Application.Controller.Auth');
                         c.setAuthAdapter(sl.get('auth_adapter'));
+                        c.setUserManager(sl.get('user_manager'));
                         return c;
                     },                    
                     //models
