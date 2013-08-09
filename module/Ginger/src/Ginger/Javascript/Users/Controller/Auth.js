@@ -17,11 +17,20 @@ Controller.Auth = $CL.extendClass(Controller.Auth, Cl.Application.Mvc.AbstractCo
     loginAction : function() {
         var v = $CL.get('Ginger.Users.View.Auth.Login');
         
+        v.setData({
+            invalidCredentials : this.getMvcEvent().getRouteMatch().getParam('invalidCredentials')
+        });
+        
         v.setSubmitCallback($CL.bind(function(data) {
             this.authAdapter.setUsername(data.email);
             this.authAdapter.setPassword(data.password);
             
-            $CL.app().router.callRoute('dashboard');
+            if (this.authAdapter.checkCredentials().isValid()) {
+                $CL.app().router.callRoute('dashboard');
+            } else {
+                $CL.app().router.forward('users_auth_login', {invalidCredentials : true});
+            }
+            
         }, this));
         
         return v;

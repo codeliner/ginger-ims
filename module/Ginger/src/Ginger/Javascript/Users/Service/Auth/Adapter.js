@@ -10,6 +10,8 @@ Auth.Adapter = function() {};
 Auth.Adapter.prototype = {
     activeApiKey : null,
     activeSecretKey : null,
+    checkCredentialsMode : false,
+    validCredentials : false,
     getActiveApiKey : function() {
         if (_.isNull(this.activeApiKey)) {
             this.activeApiKey = $.store.get('api_key') || null;
@@ -23,30 +25,67 @@ Auth.Adapter.prototype = {
         return this.activeSecretKey;
     },
     setUsername : function(username) {
-        this.activeApiKey = CryptoJS.MD5(username).toString();
+        this.activeApiKey = this.generateApiKey(username);
         $.store.set('api_key', this.activeApiKey);
     },
     setPassword : function(password) {
-        this.activeSecretKey = CryptoJS.SHA1(password).toString();
+        this.activeSecretKey = this.generateSecretKey(password);
         $.store.set('secret_key', this.activeSecretKey);
     },
-    onBeforeAjaxSend : function(jqXhr, request) {
-        if (!_.isNull(this.getActiveApiKey()) 
-            && !_.isNull(this.getActiveSecretKey())) {
-            var requestHash = CryptoJS.HmacSHA1(
-                decodeURI(request.url), 
-                this.getActiveSecretKey());
-                
-            jqXhr.setRequestHeader('Api-Key', this.getActiveApiKey());
-            jqXhr.setRequestHeader('Request-Hash', requestHash);
-        }
+    generateApiKey : function(username) {
+        return CryptoJS.MD5(username).toString();
+    },
+    generateSecretKey : function(password) {
+        return CryptoJS.SHA1(password).toString();
+    },
+    checkCredentials : function() {
+        $CL.app().wait();
+        this.validCredentials = false;
+        this.checkCredentialsMode = true;
         
-        jqXhr.fail(this.onAjaxFailure);
+        $CL.sjax().get('/rest/users/-1', $CL.bind(function(resp) {
+            this.validCredentials = true;
+        }, this), "json");
+        
+        this.checkCredentialsMode = false;
+        
+        $CL.app().stopWait();
+        
+        return this;
+    },
+    isValid : function() {
+        return this.validCredentials;
+    },
+    onBeforeAjaxSend : function(jqXhr, request) {
+        if (_.isNull(this.getActiveApiKey()) 
+            || _.isNull(this.getActiveSecretKey())) {
+                return;
+            }
+        
+        if (!this.checkCredentialsMode && !this.isValid()) {
+            $CL.app().router.callRoute('users_auth_login');
+            jqXhr.abort();
+            $CL.exception(
+                'Abort ajax request, cause valid credentials missing', 
+                'Ginger.Users.Service.Auth.Adapter'
+            );
+        }        
+         
+        var requestHash = CryptoJS.HmacSHA1(
+            decodeURI(request.url), 
+            this.getActiveSecretKey());
+
+        jqXhr.setRequestHeader('Api-Key', this.getActiveApiKey());
+        jqXhr.setRequestHeader('Request-Hash', requestHash);        
     },
     onAppAlert : function(e) {
+        if (this.checkCredentialsMode) {
+            return;
+        }
+        
         if (!_.isNull(e.getParam('jqX'))) {
             if (e.getParam('jqX').status === 401) {
-                window.location.reload();
+                $CL.app().router.callRoute('users_auth_login');                
             }
         }
     },
@@ -55,5 +94,6 @@ Auth.Adapter.prototype = {
         $.store.remove('secret_key');
         this.activeApiKey = null;
         this.activeSecretKey = null;
+        this.validCredentials = false;
     }
 };
