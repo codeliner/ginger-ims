@@ -1,4 +1,4 @@
-var Entity = $CL.namespace('Ginger.Application.Entity');
+var Entity = $CL.namespace('Ginger.Users.Entity');
 
 $CL.require('Cl.Backbone.Model');
 

@@ -1,4 +1,4 @@
-var Auth = $CL.namespace('Ginger.Application.Service.Auth');
+var Auth = $CL.namespace('Ginger.Users.Service.Auth');
 
 $CL.require("Cl.Crypto.rollups.md5");
 $CL.require("Cl.Crypto.rollups.sha1");
