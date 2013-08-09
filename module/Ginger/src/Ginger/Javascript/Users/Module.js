@@ -130,8 +130,8 @@ Users.Module.prototype = {
 
             if (layout && $CL.isInstanceOf(layout, Cl.Backbone.Layout)) {
                 var activeUser = $CL.get('user_manager').getActiveUser();
-                
-                if (activeUser){
+                var isDummy = -1;
+                if (activeUser && activeUser.get('id') !== isDummy){
                     var uv = $CL.get('Ginger.Users.View.Partial.ActiveUser');
                     uv.setElement($('#head-nav-right'));
                     uv.setData(activeUser.toJSON());
