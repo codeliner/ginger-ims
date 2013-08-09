@@ -61,10 +61,11 @@ return array(
     //Form Error Msgs
     'Value is empty!' => 'Bitte geben Sie einen Wert ein!',
     //Login
-    'HEADLINE::LOGIN' => 'Ginger IMS Login',
-    'GENERAL::LOGOUT' => 'logout',
-    'LOGIN::FORM::LABEL::EMAIL' => 'eMail',
-    'LOGIN::FORM::LABEL::PASSWORD' => 'Passwort',
+    'HEADLINE::LOGIN'               => 'Ginger IMS Login',
+    'GENERAL::LOGOUT'               => 'logout',
+    'LOGIN::FORM::LABEL::EMAIL'     => 'eMail',
+    'LOGIN::FORM::LABEL::PASSWORD'  => 'Passwort',
+    'LOGIN::INVALID_CREDENTIALS'    => 'Die Login-Daten sind nicht korrekt. Bitte versuchen Sie es erneut!',
     //Jobs
     'HEADLINE::JOBS'                         => 'Jobs',
     'HEADLINE::JOBS::ADD'                    => 'Job hinzufügen',
@@ -174,8 +175,8 @@ return array(
     //Users
     'HEADLINE::USERS'                        => 'Benutzerverwaltung',
     'USERS::HEADLINE::ADD_USER'              => 'Benutzer hinzufügen',
+    'USERS::HINT::FIRST_USER'                => 'Mit dem Anlegen des 1. Benutzers im Ginger IMS aktivieren Sie automatisch die Benutzerverwaltung. Anschließend kann die Anwendung nur noch mit einem gültigen Benutzer-Account aufgerufen werden und für jeden Job müssen Berechtigungen eingerichtet werden. Der 1. Benutzer wird automatisch als Administrator angelegt. Es sollte immer mindestens ein Benutzer die Administrator-Rolle besitzen, da nur Administratoren andere Benutzer für den Zugriff auf Jobs berechtigen können.',
     //User Form
-    'USERS::FORM::LABEL::USERNAME'           => 'Username',
     'USERS::FORM::LABEL::LASTNAME'           => 'Nachname',
     'USERS::FORM::LABEL::FIRSTNAME'          => 'Vorname',
     'USERS::FORM::LABEL::EMAIL'              => 'eMail',

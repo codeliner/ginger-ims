@@ -5,6 +5,7 @@ $CL.require("Cl.Application.Module.ModuleInterface");
 //controllers
 $CL.require("Ginger.Users.Controller.Index");
 $CL.require("Ginger.Users.Controller.Auth");
+$CL.require("Ginger.Users.Controller.User");
 //services
 $CL.require("Ginger.Users.Service.Auth.Adapter");
 //collections
@@ -46,6 +47,7 @@ Users.Module.prototype = {
                     },
                     'users_auth_login' : {
                         route : 'users/auth/login',
+                        invalidCredentials : false,
                         callback : function() {
                             return $CL.makeObj(
                                 "Cl.Application.Router.RouteMatch",
@@ -53,10 +55,16 @@ Users.Module.prototype = {
                                     module : "Ginger.Users.Module",
                                     controller : "auth",
                                     action : "login",
+                                    params : {
+                                        invalidCredentials : this.invalidCredentials
+                                    }
                                 }
                             );
                         },
                         build : function(routeParams) {
+                            this.invalidCredentials
+                                = $CL.has(routeParams, 'invalidCredentials')?
+                                routeParams.invalidCredentials : false;
                             return this.route;
                         }
                     },
@@ -75,6 +83,27 @@ Users.Module.prototype = {
                         build : function(routeParams) {
                             return this.route;
                         }
+                    },
+                    'users_user_create_first' : {
+                        route : 'users/user/create-first',
+                        userData : null,
+                        callback : function() {
+                            return $CL.makeObj(
+                                "Cl.Application.Router.RouteMatch",
+                                {
+                                    module : "Ginger.Users.Module",
+                                    controller : "user",
+                                    action : "createFirstUser",
+                                    params : {
+                                        userData : this.userData
+                                    }
+                                }
+                            );
+                        },
+                        build : function(routeParams) {
+                            this.userData = routeParams.userData;
+                            return this.route;
+                        }
                     }
                 }
             },
@@ -86,7 +115,12 @@ Users.Module.prototype = {
                         c.setAuthAdapter(sl.get('auth_adapter'));
                         c.setUserManager(sl.get('user_manager'));
                         return c;
-                    },   
+                    },  
+                    'Ginger.Users.Controller.User' : function(sl) {
+                        var c = $CL.makeObj('Ginger.Users.Controller.User');
+                        c.setUsersCollection(sl.get('Ginger.Users.Collection.Users'));
+                        return c;
+                    },  
                     //models
                     'user_manager' : function(sl) {
                         var um = $CL.makeObj('Ginger.Users.Model.User.UserManager');
@@ -132,6 +166,7 @@ Users.Module.prototype = {
                 var activeUser = $CL.get('user_manager').getActiveUser();
                 var isDummy = -1;
                 if (activeUser && activeUser.get('id') !== isDummy){
+                    $CL.log(activeUser);
                     var uv = $CL.get('Ginger.Users.View.Partial.ActiveUser');
                     uv.setElement($('#head-nav-right'));
                     uv.setData(activeUser.toJSON());

@@ -15,24 +15,28 @@ User.UserManager.prototype = {
         this.usersCollection = usersCollection;
     },
     getActiveUser : function() {
-        //Request for active user if no users are registered (a dummy admin is returned as user)
-        //or the auth adapter has credentials
+        //Request for active user if no users are registered a dummy admin is returned 
         if (_.isNull(this.activeUser) 
-            && (!_.isNull(this.authAdpater.activeApiKey) || !$CL.variable('$LOGIN_REQUIRED', false))) {
+            && (this.authAdpater.isValid() || !$CL.variable('$LOGIN_REQUIRED', false))) {
             $CL.app().wait();
             var activeUser = $CL.makeObj('Ginger.Users.Entity.User');
             var jqXhr = $CL.sjax().get('/rest/users/-1', function(data) {
                 activeUser.set(data);
             }, 'json');
             
+            var requestFailed = false;
+            
             jqXhr.fail(function(jqXhr) {
                 $CL.app().alert('Failed to fetch data for active user', jqXhr);
+                requestFailed = true;
             });
             
             $CL.app().stopWait();
             
-            this.usersCollection.add(activeUser);
-            this.activeUser = activeUser;
+            if (!requestFailed) {
+                this.usersCollection.add(activeUser);
+                this.activeUser = activeUser;
+            }
         }
         
         return this.activeUser;
