@@ -9,15 +9,11 @@ $CL.require("Cl.Jquery.Plugin.Scroll.To");
 $CL.require("Cl.Jquery.Plugin.Effect.Core");
 //controllers
 $CL.require("Ginger.Application.Controller.ModuleLoader");
-$CL.require("Ginger.Application.Controller.Auth");
 //services
 $CL.require("Ginger.Application.Service.ModuleElement.ElementLoader");
-$CL.require("Ginger.Application.Service.Auth.Adapter");
 //collections
 $CL.require('Ginger.Application.Collection.Modules');
-$CL.require('Ginger.Application.Collection.Users');
 //models
-$CL.require("Ginger.Application.Model.User.UserManager");
 $CL.require("Ginger.Application.Model.Mapper.StructureMapper");
 $CL.require("Ginger.Application.Model.File.SourceFile");
 $CL.require("Ginger.Application.Model.Directory.SourceDirectory");
@@ -29,11 +25,7 @@ $CL.require("Ginger.Application.Model.Feature.ValidatorFeature");
 $CL.require("Ginger.Application.Model.Feature.FilterFeature");
 $CL.require("Ginger.Application.Model.Feature.AttributeMapFeature");
 $CL.require("Ginger.Application.Model.Feature.StaticValueFeature");
-//forms
-$CL.require("Ginger.Application.Form.Login");
 //Views
-$CL.require("Ginger.Application.View.Auth.Login");
-$CL.require("Ginger.Application.View.Partial.ActiveUser");
 $CL.require("Ginger.Application.View.Helper.Breadcrumbs");
 $CL.require("Ginger.Application.View.Partial.StructureMapperOptions");
 $CL.require("Ginger.Application.View.Partial.SourcefileOptions");
@@ -80,38 +72,6 @@ Application.Module.prototype = {
                             .replace(':moduleName', routeParams.moduleName)
                             .replace(':gotoRoute', routeParams.gotoRoute);
                         }
-                    },
-                    'application_auth_login' : {
-                        route : 'application/auth/login',
-                        callback : function() {
-                            return $CL.makeObj(
-                                "Cl.Application.Router.RouteMatch",
-                                {
-                                    module : "Ginger.Application.Module",
-                                    controller : "auth",
-                                    action : "login",
-                                }
-                            );
-                        },
-                        build : function(routeParams) {
-                            return this.route;
-                        }
-                    },
-                    'application_auth_logout' : {
-                        route : 'application/auth/logout',
-                        callback : function() {
-                            return $CL.makeObj(
-                                "Cl.Application.Router.RouteMatch",
-                                {
-                                    module : "Ginger.Application.Module",
-                                    controller : "auth",
-                                    action : "logout",
-                                }
-                            );
-                        },
-                        build : function(routeParams) {
-                            return this.route;
-                        }
                     }
                 },
                 history : {
@@ -130,13 +90,7 @@ Application.Module.prototype = {
             },
             service_manager : {
                 factories : {
-                    //controllers
-                    'Ginger.Application.Controller.Auth' : function(sl) {
-                        var c = $CL.makeObj('Ginger.Application.Controller.Auth');
-                        c.setAuthAdapter(sl.get('auth_adapter'));
-                        c.setUserManager(sl.get('user_manager'));
-                        return c;
-                    },                    
+                                    
                     //models
                     //be aware of the missing Application namespace in mapper alias. It's important,
                     //cause otherwise autoloading of mapper in configuration edit doesn't work.
@@ -239,14 +193,6 @@ Application.Module.prototype = {
                         m.setHelpView(sl.get('Ginger.Application.View.Partial.StaticValueFeatureHelp'));
                         return m;
                     },
-                    'user_manager' : function(sl) {
-                        var um = $CL.makeObj('Ginger.Application.Model.User.UserManager');
-                        
-                        um.setAuthAdapter(sl.get('auth_adapter'));
-                        um.setUsersCollection(sl.get('Ginger.Application.Collection.Users'));
-                        
-                        return um;
-                    },
                     //Collections
                     'Ginger.Application.Collection.Modules' : function(sl) {
                         var c = $CL.makeObj('Ginger.Application.Collection.Modules');
@@ -257,21 +203,7 @@ Application.Module.prototype = {
                     'module_element_loader' : function(sl) {
                         return $CL.makeObj('Ginger.Application.Service.ModuleElement.ElementLoader');
                     },
-                    'auth_adapter' : function(sl) {
-                        return $CL.makeObj("Ginger.Application.Service.Auth.Adapter");
-                    },
                     //views
-                    "Ginger.Application.View.Auth.Login" : function(sl) {
-                        var v = $CL.makeObj('Ginger.Application.View.Auth.Login');
-                        v.setForm(sl.get('Ginger.Application.Form.Login'));
-                        v.setTemplate($CL._template('application_auth_login'));
-                        return v;
-                    },
-                    "Ginger.Application.View.Partial.ActiveUser" : function(sl) {
-                        var v = $CL.makeObj("Ginger.Application.View.Partial.ActiveUser");
-                        v.setTemplate($CL._template('application_nav_active_user'));
-                        return v;
-                    },
                     "Ginger.Application.View.Helper.Breadcrumbs" : function(sl) {
                         var v = $CL.makeObj("Ginger.Application.View.Helper.Breadcrumbs");
                         v.setTemplate($CL._template('application_breadcrumbs'));
@@ -342,17 +274,7 @@ Application.Module.prototype = {
         $CL.get("application").events().attach("render", function(e) {
             var layout = e.getResponse();
 
-            if (layout && $CL.isInstanceOf(layout, Cl.Backbone.Layout)) {
-                var activeUser = $CL.get('user_manager').getActiveUser();
-                
-                if (activeUser){
-                    var uv = $CL.get('Ginger.Application.View.Partial.ActiveUser');
-                    uv.setElement($('#head-nav-right'));
-                    uv.setData(activeUser.toJSON());
-                    uv.render();
-                    layout.addChild(uv);
-                }                
-                
+            if (layout && $CL.isInstanceOf(layout, Cl.Backbone.Layout)) { 
                 var b = $CL.get("Ginger.Application.View.Helper.Breadcrumbs");
                 b.setData(e.getParam('breadcrumbs', []));
                 layout.addChild(b);
@@ -528,14 +450,6 @@ Application.Module.prototype = {
                 return newText;
             }
         };
-        
-        //Register Auth Adpater to listen on ajax calls
-        //to inject Api-Key and Request-Hash headers
-        var authAdapter = $CL.get('auth_adapter');
-        $CL.attachBeforeAjaxSend($CL.bind(authAdapter.onBeforeAjaxSend, authAdapter));
-        //also register Auth Adapter to listen on application.alert events
-        //to check if a response failed with status 401 
-        $CL.app().events().attach('alert', [authAdapter.onAppAlert, authAdapter]);
     },
     getController : function(controllerName) {
         controllerName = controllerName.ucfirst();

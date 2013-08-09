@@ -1,4 +1,4 @@
-var Form = $CL.namespace('Ginger.Application.Form');
+var Form = $CL.namespace('Ginger.Users.Form');
 
 $CL.require('Cl.Form.Form');
 $CL.require('Cl.Form.Element.Email');

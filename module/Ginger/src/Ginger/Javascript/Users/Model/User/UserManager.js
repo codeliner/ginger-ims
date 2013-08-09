@@ -1,6 +1,6 @@
-var User = $CL.namespace('Ginger.Application.Model.User');
+var User = $CL.namespace('Ginger.Users.Model.User');
 
-$CL.require('Ginger.Application.Entity.User');
+$CL.require('Ginger.Users.Entity.User');
 
 User.UserManager = function() {};
 
@@ -17,7 +17,7 @@ User.UserManager.prototype = {
     getActiveUser : function() {
         if (_.isNull(this.activeUser) && !_.isNull(this.authAdpater.activeApiKey)) {
             $CL.app().wait();
-            var activeUser = $CL.makeObj('Ginger.Application.Entity.User');
+            var activeUser = $CL.makeObj('Ginger.Users.Entity.User');
             var jqXhr = $CL.sjax().get('/rest/users/-1', function(data) {
                 activeUser.set(data);
             }, 'json');

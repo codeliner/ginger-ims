@@ -1,4 +1,4 @@
-var Auth = $CL.namespace('Ginger.Application.View.Auth');
+var Auth = $CL.namespace('Ginger.Users.View.Auth');
 
 $CL.require('Cl.Backbone.FormView');
 $CL.require('Cl.Form.View.InputText');
