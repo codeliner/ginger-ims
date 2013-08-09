@@ -415,6 +415,7 @@ return array(
                 'users_form_user'         => 'ginger/users/form/user',
                 'users_auth_login'        => 'ginger/users/auth/login',
                 'users_nav_active_user'   => 'ginger/users/partial/nav-active-user',
+                'users_user_show'         => 'ginger/users/user/show',
             ),
         ),
     ),

@@ -19,6 +19,7 @@ $CL.require("Ginger.Users.Form.Login");
 $CL.require("Ginger.Users.View.Auth.Login");
 $CL.require("Ginger.Users.View.Partial.ActiveUser");
 $CL.require("Ginger.Users.View.Form.User");
+$CL.require("Ginger.Users.View.User.Show");
 
 Users.Module = function() {
     this.__IMPLEMENTS__ = [Cl.Application.Module.ModuleInterface];
@@ -104,6 +105,25 @@ Users.Module.prototype = {
                             this.userData = routeParams.userData;
                             return this.route;
                         }
+                    },
+                    'users_user_show' : {
+                        route : 'users/user/show/:id',
+                        callback : function(id) {
+                            return $CL.makeObj(
+                                "Cl.Application.Router.RouteMatch",
+                                {
+                                    module : "Ginger.Users.Module",
+                                    controller : "user",
+                                    action : "show",
+                                    params : {
+                                        id : id
+                                    }
+                                }
+                            );
+                        },
+                        build : function(routeParams) {
+                            return this.route.replace(':id', routeParams.id);
+                        }
                     }
                 }
             },
@@ -151,7 +171,12 @@ Users.Module.prototype = {
                         v.setForm($CL.makeObj('Ginger.Users.Form.User'));
                         v.setTemplate($CL._template('users_form_user'));
                         return v;
-                    }
+                    },
+                    "Ginger.Users.View.User.Show" : function(sl) {
+                        var v = $CL.makeObj("Ginger.Users.View.User.Show");
+                        v.setTemplate($CL._template('users_user_show'));
+                        return v;
+                    },
                 }
             }
         };
@@ -166,7 +191,6 @@ Users.Module.prototype = {
                 var activeUser = $CL.get('user_manager').getActiveUser();
                 var isDummy = -1;
                 if (activeUser && activeUser.get('id') !== isDummy){
-                    $CL.log(activeUser);
                     var uv = $CL.get('Ginger.Users.View.Partial.ActiveUser');
                     uv.setElement($('#head-nav-right'));
                     uv.setData(activeUser.toJSON());
