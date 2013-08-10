@@ -1,0 +1,31 @@
+<div class="row-fluid">
+    <div class="span12">
+        <h2><%= $CL.translate('HEADLINE::LOGIN') %></h2>
+    </div>
+</div>
+<% if (obj.invalidCredentials) { %>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="alert alert-danger"><%- $CL.translate('LOGIN::INVALID_CREDENTIALS') %></div>
+    </div>
+</div>
+<% } %>
+<form name="login" method="post" action="#">
+<div class="row-fluid">
+    <div class="span12  row-label-element desktop-span7">
+        <% print(Cl.Form.View.InputText.print(form.getElement('email'), form.getErrors())); %>
+    </div>
+    <div class="desktop-span5 visible-desktop"></div>
+</div>
+<div class="row-fluid">
+    <div class="span12 row-label-element desktop-span7">
+        <% print(Cl.Form.View.Password.print(form.getElement('password'), form.getErrors())); %>
+    </div>
+    <div class="desktop-span5 visible-desktop"></div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <input type="submit" name="save" value="<%= $CL.translate('FORM::BUTTON::SAVE') %>"
+    </div>
+</div>
+</form>

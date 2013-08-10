@@ -50,8 +50,8 @@ Ginger.AppInitializer.prototype = {
         //The flag is set serverside in the CheckActiveUser dispatch listener
         //and indicate that credentials are required
         if ($CL.variable('$LOGIN_REQUIRED', false)) {
-            if (_.isNull($CL.get('auth_adapter').getActiveApiKey())) {
-                $CL.app().router.callRoute('application_auth_login');
+            if (!$CL.get('auth_adapter').checkCredentials().isValid()) {
+                $CL.app().router.callRoute('users_auth_login');
                 return;
             }
         }
