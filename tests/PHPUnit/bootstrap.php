@@ -23,7 +23,7 @@ $zf2Autoloader = new Zend\Loader\StandardAutoloader();
 $zf2Autoloader->setFallbackAutoloader(true);
 $zf2Autoloader->register();
 
-include 'vendor/Cl/Test/PHPUnitTestCase.php';
+include 'module/Cl/Test/PHPUnitTestCase.php';
 
 Cl\Test\PHPUnitTestCase::setApplication(
     Zend\Mvc\Application::init(include 'config/application.config.php')

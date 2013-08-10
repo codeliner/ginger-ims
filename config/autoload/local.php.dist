@@ -1,0 +1,32 @@
+<?php
+return array(
+    'css_manager' => array(
+        'override_files' => true,
+    ),
+    "codelinerjs.jstest_loader" => array(
+        'qunit_enabled' => true,
+    ),
+    "codelinerjs.js_loader" => array(
+        'default' => array(
+            'staging' => 'development',
+        ),
+    ),
+    'doctrine' => array(
+        'connection' => array(
+            'orm_default' => array(
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'params' => array(
+                    'host' => 'localhost',
+                    'port' => '3306',
+                    'user' => 'root',
+                    'password' => '',
+                    'dbname' => 'ginger',
+                    'charset' => 'utf8',
+                    'driverOptions' => array(
+                        1002 => "SET NAMES 'UTF8'"
+                    ),
+                )
+            )
+        ),
+    ),
+);

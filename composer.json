@@ -1,6 +1,6 @@
 {
     "name": "codeliner/ginger-ims",
-    "description": "Flexible and webbased Interface-Management-System",
+    "description": "Flexible webbased Interface-Management-System",
     "license": "BSD-3-Clause",    
     "homepage": "http://www.codeliner.ws/",
     "authors": [
