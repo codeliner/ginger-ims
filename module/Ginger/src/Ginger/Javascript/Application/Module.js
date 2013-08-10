@@ -364,6 +364,9 @@ Application.Module.prototype = {
         
         //set some global stuff for templates
         window.helpers = {
+            basePath : function() {
+                return $CL.basePath.replace('/index.php', '');
+            },
             uri : function(route, params) {
                 return $CL.get("application").router.getUri(route, params);
             },
