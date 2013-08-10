@@ -1,0 +1,16 @@
+<div class="row-fluid">
+    <div class="span12">
+        <select name="sqlconnect-source-count-column" class="no-fluid12">
+            <option value="">-&nbsp;<%= $CL.translate('SQLCONNECT::SOURCE::COUNT_COLUMN') %>&nbsp;-</option>
+            <% _.each(sourceInfo.data_structure, function(columnDesc) { %>
+            <option><%- columnDesc.name %></option>
+            <% }) %>
+        </select>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12 row-textarea">
+        <label for="sqlconnect-source-custom-sql"><%= $CL.translate('SQLCONNECT::SOURCE::OPTIONS::CUSTOM_SQL') %></label>
+        <textarea name="sqlconnect-source-custom-sql"></textarea>
+    </div>
+</div>
