@@ -19,10 +19,7 @@
     "require": {
         "php": ">=5.4.0",
         "zendframework/zendframework": "2.0.5",
-        "behat/behat": "2.4.*@stable",
-        "behat/mink-extension": "*",
-        "behat/mink-selenium2-driver" : "*",
-        "behat/mink-goutte-driver" : "*",
-        "doctrine/doctrine-orm-module": "*"
+        "codeliner/codelinerjs": "dev-master",        
+        "doctrine/doctrine-orm-module": "*"        
     }
 }
