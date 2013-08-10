@@ -1,4 +1,4 @@
 ginger-ims
 ===========
 
-Flexible webbased Interface-Management-System
+Flexible web based Interface-Management-System
