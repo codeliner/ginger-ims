@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "01bf00853e16d4dba0c8b31084518ab4",
+    "hash": "9a44881ec0e09c189f0893b3def1017b",
     "packages": [
         {
             "name": "codeliner/codelinerjs",
@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/codeliner/codelinerjs.git",
-                "reference": "2979283eaafb7e2806d3c7fee4a79611587cfa2c"
+                "reference": "3264f7786a979b5374cc8b33e807c8b56a577d60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/codeliner/codelinerjs/zipball/2979283eaafb7e2806d3c7fee4a79611587cfa2c",
-                "reference": "2979283eaafb7e2806d3c7fee4a79611587cfa2c",
+                "url": "https://api.github.com/repos/codeliner/codelinerjs/zipball/3264f7786a979b5374cc8b33e807c8b56a577d60",
+                "reference": "3264f7786a979b5374cc8b33e807c8b56a577d60",
                 "shasum": ""
             },
             "require": {
@@ -48,7 +48,7 @@
                 "javascript",
                 "zf2"
             ],
-            "time": "2013-08-10 21:27:05"
+            "time": "2013-08-10 22:50:17"
         },
         {
             "name": "doctrine/common",
