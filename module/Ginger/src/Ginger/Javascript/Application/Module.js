@@ -9,10 +9,8 @@ $CL.require("Cl.Jquery.Plugin.Scroll.To");
 $CL.require("Cl.Jquery.Plugin.Effect.Core");
 //controllers
 $CL.require("Ginger.Application.Controller.ModuleLoader");
-$CL.require("Ginger.Application.Controller.Auth");
 //services
 $CL.require("Ginger.Application.Service.ModuleElement.ElementLoader");
-$CL.require("Ginger.Application.Service.Auth.Adapter");
 //collections
 $CL.require('Ginger.Application.Collection.Modules');
 //models
@@ -27,10 +25,7 @@ $CL.require("Ginger.Application.Model.Feature.ValidatorFeature");
 $CL.require("Ginger.Application.Model.Feature.FilterFeature");
 $CL.require("Ginger.Application.Model.Feature.AttributeMapFeature");
 $CL.require("Ginger.Application.Model.Feature.StaticValueFeature");
-//forms
-$CL.require("Ginger.Application.Form.Login");
 //Views
-$CL.require("Ginger.Application.View.Auth.Login");
 $CL.require("Ginger.Application.View.Helper.Breadcrumbs");
 $CL.require("Ginger.Application.View.Partial.StructureMapperOptions");
 $CL.require("Ginger.Application.View.Partial.SourcefileOptions");
@@ -77,23 +72,7 @@ Application.Module.prototype = {
                             .replace(':moduleName', routeParams.moduleName)
                             .replace(':gotoRoute', routeParams.gotoRoute);
                         }
-                    },
-                    'application_auth_login' : {
-                        route : 'application/auth/login',
-                        callback : function() {
-                            return $CL.makeObj(
-                                "Cl.Application.Router.RouteMatch",
-                                {
-                                    module : "Ginger.Application.Module",
-                                    controller : "auth",
-                                    action : "login",
-                                }
-                            );
-                        },
-                        build : function(routeParams) {
-                            return this.route;
-                        }
-                    }
+                    }                    
                 },
                 history : {
                     silent : false,
@@ -223,17 +202,8 @@ Application.Module.prototype = {
                     //services
                     'module_element_loader' : function(sl) {
                         return $CL.makeObj('Ginger.Application.Service.ModuleElement.ElementLoader');
-                    },
-                    'auth_adapter' : function(sl) {
-                        return $CL.makeObj("Ginger.Application.Service.Auth.Adapter");
-                    },
-                    //views
-                    "Ginger.Application.View.Auth.Login" : function(sl) {
-                        var v = $CL.makeObj('Ginger.Application.View.Auth.Login');
-                        v.setForm(sl.get('Ginger.Application.Form.Login'));
-                        v.setTemplate($CL._template('application_auth_login'));
-                        return v;
-                    },
+                    },                    
+                    //views                    
                     "Ginger.Application.View.Helper.Breadcrumbs" : function(sl) {
                         var v = $CL.makeObj("Ginger.Application.View.Helper.Breadcrumbs");
                         v.setTemplate($CL._template('application_breadcrumbs'));
