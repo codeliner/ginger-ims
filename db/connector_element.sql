@@ -37,7 +37,7 @@ INSERT INTO `connector_element` (`id`, `name`, `class`, `link`, `module_name`, `
 (10, 'Url', 'Ginger\\Model\\Feature\\FilterFeature', '#', 'Ginger.Application', 'feature'),
 (11, 'PHP Script', 'Ginger\\Model\\Script\\SourceScript', '#', 'Ginger.Application', 'source'),
 (12, 'Dev/Null', 'Ginger\\Model\\Script\\DevNullTarget', '#', 'Ginger.Application', 'target'),
-(13, 'Directory', 'Ginger\\Model\\Directory\\TargetDirectory', '#', 'Ginger.Application', 'target'),
+(13, 'Directory', 'Ginger\\Model\\Directory\\TargetDirectory', '#', 'Ginger.Application', 'target');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
