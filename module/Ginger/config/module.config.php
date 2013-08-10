@@ -164,6 +164,18 @@ return array(
                     )
                 ),
             ),
+            'rest_users' => array(
+                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'options' => array(
+                    'route'    => '/rest/users[/:id]',
+                    'defaults' => array(
+                        'controller' => 'Ginger\Rest\Users',
+                    ),
+                    'constraints' => array(
+                        'id' => '[a-zA-Z0-9-]+'
+                    )
+                ),
+            ),
             'configuration_export' => array(
                 'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
@@ -323,6 +335,12 @@ return array(
                 $c->setFeatureLoader($cl->getServiceLocator()->get('feature_loader'));
                 return $c;
             },
+            'Ginger\Rest\Users' => function($cl) {
+                $c = new \Ginger\Rest\UsersService();
+                $c->setUserLoader($cl->getServiceLocator()->get('user_loader'));
+                $c->setUserManager($cl->getServiceLocator()->get('usermanager'));
+                return $c;
+            },
         ),
     ),
     'translator' => array(
@@ -396,6 +414,9 @@ return array(
                 'jobs_jobrun_show'        => 'ginger/jobs/jobrun/show',
                 'jobs_jobrun_entry'       => 'ginger/jobs/jobrun/entry',
                 'users_form_user'         => 'ginger/users/form/user',
+                'users_auth_login'        => 'ginger/users/auth/login',
+                'users_nav_active_user'   => 'ginger/users/partial/nav-active-user',
+                'users_user_show'         => 'ginger/users/user/show',
             ),
         ),
     ),

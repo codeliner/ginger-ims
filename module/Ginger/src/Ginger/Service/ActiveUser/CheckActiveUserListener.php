@@ -112,6 +112,10 @@ class CheckActiveUserListener implements ListenerAggregateInterface
         $apiKey = $e->getRequest()->getHeader('Api-Key', null);
         $requestHash = $e->getRequest()->getHeader('Request-Hash', null);
         
+        //Check lazy loading of js modules. Nothing to do in this case.
+        if ($e->getRouteMatch()->getParam('controller') == "Codelinerjs\Controller\LazyModule") {
+            return;
+        }        
                 
         //Set dummy user as active and return early when no user is registered
         if (!$this->userManager->hasUsers()) {
@@ -124,7 +128,7 @@ class CheckActiveUserListener implements ListenerAggregateInterface
         if (is_null($apiKey) || is_null($requestHash)) {
             if ($e->getRequest()->isXmlHttpRequest()) {
                 return $e->getResponse()->setStatusCode(401)->setContent(
-                    'Credentials missing. Please provide an api_key and a request_hash header parameter'
+                    'Credentials missing. Please provide an Api-Key and a Request-Hash header parameter!'
                     );
             } else {
                 

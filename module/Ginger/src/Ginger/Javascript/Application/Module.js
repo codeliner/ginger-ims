@@ -111,12 +111,7 @@ Application.Module.prototype = {
             },
             service_manager : {
                 factories : {
-                    //controllers
-                    'Ginger.Application.Controller.Auth' : function(sl) {
-                        var c = $CL.makeObj('Ginger.Application.Controller.Auth');
-                        c.setAuthAdapter(sl.get('auth_adapter'));
-                        return c;
-                    },                    
+                                    
                     //models
                     //be aware of the missing Application namespace in mapper alias. It's important,
                     //cause otherwise autoloading of mapper in configuration edit doesn't work.
@@ -309,7 +304,7 @@ Application.Module.prototype = {
         $CL.get("application").events().attach("render", function(e) {
             var layout = e.getResponse();
 
-            if (layout && $CL.isInstanceOf(layout, Cl.Backbone.Layout)) {
+            if (layout && $CL.isInstanceOf(layout, Cl.Backbone.Layout)) { 
                 var b = $CL.get("Ginger.Application.View.Helper.Breadcrumbs");
                 b.setData(e.getParam('breadcrumbs', []));
                 layout.addChild(b);
@@ -485,11 +480,6 @@ Application.Module.prototype = {
                 return newText;
             }
         };
-        
-        //Register Auth Adpater to listen on ajax calls
-        //and inject Api-Key and Request-Hash headers
-        var authAdapter = $CL.get('auth_adapter');
-        $CL.attachBeforeAjaxSend($CL.bind(authAdapter.onBeforeAjaxSend, authAdapter));
     },
     getController : function(controllerName) {
         controllerName = controllerName.ucfirst();

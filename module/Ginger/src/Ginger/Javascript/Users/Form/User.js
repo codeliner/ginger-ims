@@ -9,11 +9,7 @@ Form.User = function() {};
 Form.User = $CL.extendClass(Form.User, Cl.Form.Form, {
     name : "user",
     init : function() {
-        this.elements = [
-            $CL.makeObj('Cl.Form.Element.Text', {
-                'name' : 'username',
-                'label' : $CL.translate('USERS::FORM::LABEL::USERNAME')
-            }),
+        this.elements = [            
             $CL.makeObj('Cl.Form.Element.Text', {
                 'name' : 'lastname',
                 'label' : $CL.translate('USERS::FORM::LABEL::LASTNAME')
