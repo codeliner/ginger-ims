@@ -72,8 +72,8 @@ class ApiKeyAdapter implements AdapterInterface
             return new AuthResult(AuthResult::FAILURE_IDENTITY_NOT_FOUND, null);
         }
         
-        $checkHash = hash_hmac('sha1', $this->requestUri, $userData['secretKey']);
-
+        $checkHash = hash_hmac('sha1', urldecode($this->requestUri), $userData['secretKey']);
+        
         if ($checkHash != $this->requestHash) {
             return new AuthResult(AuthResult::FAILURE_CREDENTIAL_INVALID, null);
         }
