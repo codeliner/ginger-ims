@@ -1,0 +1,42 @@
+<?php
+return array(
+    'SQLCONNECT::SOURCES::INFO'                 => 'Für jede Datenbankverbindung, die Sie unter dem Punkt "Datenbankverbindungen" als Quelle festgelegt haben, können Sie hier die Tabellen definieren, die Sie als Quell-Tabellen für einen Job freigegeben möchten.',
+    'SQLCONNECT::TARGETS::INFO'                 => 'Für jede Datenbankverbindung, die Sie unter dem Punkt "Datenbankverbindungen" als Ziel festgelegt haben, können Sie hier die Tabellen definieren, die Sie als Ziel-Tabellen für einen Job freigegeben möchten.',
+    'SQLCONNECT::CONNECTION::INFO'              => 'Legen Sie beliebig viele Datenbankverbindungen an. Die gängisten Systeme wie MySql, Oracle, MS Sql und Postgre werden ünterstützt.',
+    'SQLCONNECT::BUTTON::MANAGE_SOURCES'        => 'Quell-Tabellen festlegen',
+    'SQLCONNECT::BUTTON::MANAGE_TARGETS'        => 'Ziel-Tabellen festlegen',
+    'SQLCONNECT::BUTTON::MANAGE_CONNECTIONS'    => 'Datenbankverbindungen',
+    'SQLCONNECT::HEADLINE::TABLES'              => 'Tabellenübersicht',
+    'SQLCONNECT::CONNECTION'                    => 'Verbindung',
+    'SQLCONNECT::DATABASE'                      => 'Datenbank',
+    'SQLCONNECT::DATABASE_CONNECTIONS'          => 'Datenbankverbindungen',
+    'SQLCONNECT::DATABASE_CONNECTION_ADD'       => 'Verbindung hinzufügen',
+    'SQLCONNECT::DATABASE_CONNECTION_EDIT'      => 'Verbindung einstellen',
+    'SQLCONNECT::CONNECTION_NAME'               => 'Name der Datenbankverbindung',
+    'SQLCONNECT::DATABASE_DRIVER'               => 'Datenbank-Treiber',
+    'SQLCONNECT::DB_NAME'                       => 'Datenbankname',
+    'SQLCONNECT::DB_HOST'                       => 'Host',
+    'SQLCONNECT::DB_PORT'                       => 'Port',
+    'SQLCONNECT::DB_USER'                       => 'Datenbankbenutzer',
+    'SQLCONNECT::DB_PASS'                       => 'Passwort',
+    'SQLCONNECT::DB_SHOW_PASS'                  => 'Passwort anzeigen',
+    'SQLCONNECT::DB_DRIVER_OPTIONS'             => 'Treiber-Optionen',
+    'SQLCONNECT::DB_CHARSET'                    => 'Zeichencodierung',
+    'SQLCONNECT::CHOOSE_CONNECTION'             => 'Verbindung wählen',
+    //sources
+    'SQLCONNECT::SOURCE::USE_AS'                => 'als Quelle verwenden',
+    'SQLCONNECT::SOURCE::OPTIONS::CUSTOM_SQL'   => 'benutzerdefiniertes Select-Statement',
+    'SQLCONNECT::SOURCE::COUNT_COLUMN'          => 'Zählspalte',
+    //Targets
+    'SQLCONNECT::TARGET::USE_AS'                => 'als Ziel verwenden',
+    'SQLCONNECT::TARGET::OPTIONS::EMPTY_TABLE'  => 'Tabelle vor dem Import leeren',
+    //help texts
+    'SqlConnect::SOURCE::HELP'           => 'Sie haben die Sql-Tabelle "<strong>:sourceName</strong>" als Quelle festgelegt. Es werden alle Datensätze vollständig aus der Tabelle ausgelesen.<br />Sollte die Tabelle <strong>nicht</strong> über eine "<strong>id</strong>"-Spalte verfügen, muss unter dem Punkt <strong>Einstellungen</strong>" eine Spalte als "<strong>Zählspalte</strong>" festgelegt werden, die einen Datensatz eindeutig kennzeichnet.<br />Für SQL-Kenner gibt es zusätzlich die Möglichkeit ein benutzerdefiniertes SQL-Statement für die Datensatzabfrage anzugeben, um die Datenmenge über WHERE-Bedingung einzuschränken, Daten zu aggregieren oder via JOINS Daten aus weiteren Tabellen hinzuzufügen.',
+    'SqlConnect::TARGET::HELP'           => 'Sie haben die Sql-Tabelle "<strong>:targetName</strong>" als Ziel festgelegt.<br />Ordnen Sie die <strong>Quell-Attribute</strong> den <strong>Zielspalten</strong> in der Tabelle zu (Ziel-Attribute).<br />Die Datensätze werden mit einem "INSERT" Befehl in die Zieltabelle eingefügt. Bei <strong>doppelten Datensätzen</strong> oder <strong>wiederholten Importen</strong> kann dies zu <strong>Fehlern</strong> führen. Sie sollten in dem Fall unter dem Punkt "<strong>Einstellungen</strong>" festlegen, dass die Zieltabelle geleert wird, bevor die Datensätze importiert werden. Bei der Einstellung wird vorausgesetzt, dass die Quelle immer <strong>alle</strong> Datensätze liefert und nicht nur eine Teilmenge.',
+    //errors
+    'SQLCONNECT::ERROR::NO_CONNECTIONS'         => 'Es sind keine Datenbankverbindungen konfiguriert.',
+    'SQLCONNECT::ERROR::CHOOSE_DRIVER'          => 'Bitte wählen Sie einen Datenbank-Treiber aus der Liste.',
+    'SQLCONNECT::ERROR::CHOOSE_CONNECT_SITE'    => 'Bitte legen Sie fest, ob die Tabellen der Datenbank als Quell- und/oder Ziel-Tabellen verwendet werden sollen.',
+    'SQLCONNECT::ERROR::CONNECTION_FAILED'      => 'Die Verbindung zur Datenbank kann nicht hergestellt werden. Bitte überprüfen Sie Ihre Eingaben.',
+    'SQLCONNECT::ERROR::CONNECTION_NAME_EMPTY'  => 'Bitte geben Sie einen Namen für die Datenbankverbindung ein.',
+);

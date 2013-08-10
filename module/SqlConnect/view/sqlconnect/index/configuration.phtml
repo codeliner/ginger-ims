@@ -1,0 +1,44 @@
+<div class="row-fluid">
+    <div class="span12">
+        <h1>SqlConnect - <%= $CL.translate('GENERAL::CONFIGURATION') %></h1>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <fieldset>
+            <legend><%= $CL.translate('SQLCONNECT::DATABASE_CONNECTIONS') %></legend>
+            <button class="btn js-add-connection"><%= $CL.translate('SQLCONNECT::DATABASE_CONNECTION_ADD') %>&nbsp;<i class="icon-plus"></i></button>
+            <p>&nbsp;</p>
+            <div class="table-style js-connections">
+                <div class="ts-tr">
+                    <div class="ts-th ts-td5"><%= $CL.translate('GENERAL::NAME') %></div>
+                    <div class="ts-th ts-td2"><%= $CL.translate('GENERAL::SOURCE') %></div>
+                    <div class="ts-th ts-td2"><%= $CL.translate('GENERAL::TARGET') %></div>
+                    <div class="ts-th ts-td3">&nbsp;</div>
+                </div>
+                <% if (!obj.connections || $CL.isEmpty(obj.connections)) { %>
+                <div class="no-fluid12 alert">
+                    <%= $CL.translate('SQLCONNECT::ERROR::NO_CONNECTIONS') %>
+                </div>
+                <% } else { %>
+                <% _.each(obj.connections, function(data, name) { %>
+                <div class="ts-tr">
+                    <div class="ts-td5">
+                        <%- name  %>
+                    </div>
+                    <div class="ts-td2">
+                        <i class="icon-<% (data.isSource)? print('ok') : print('minus') %>"></i>
+                    </div>
+                    <div class="ts-td2">
+                        <i class="icon-<% (data.isTarget)? print('ok') : print('minus') %>"></i>
+                    </div>
+                    <div class="ts-td3">
+                        <% print($CL._template('application_edit_remove')({id : name})) %>
+                    </div>
+                </div>
+                <% }) %>
+                <% } %>
+            </div>
+        </fieldset>
+    </div>
+</div>

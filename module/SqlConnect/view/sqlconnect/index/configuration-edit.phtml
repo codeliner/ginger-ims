@@ -1,0 +1,167 @@
+<div class="row-fluid">
+    <div class="span12">
+        <h1>SqlConnect - <%= $CL.translate('SQLCONNECT::DATABASE_CONNECTION_EDIT') %> </h1>
+    </div>
+</div>
+<form>
+    <fieldset>
+        <legend><%= $CL.translate('GENERAL::GENERAL') %></legend>
+        <div class="row-fluid">
+            <div class="span12">
+                <label for="connection"><%= $CL.translate('SQLCONNECT::CONNECTION_NAME') %></label>
+                <input type="text" name="name" class="span3" />
+            </div>
+            <div class="span6"></div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="control-group">
+                    <label for="driverClass">
+                        <select name="driverClass" class="span3">
+                            <option value="none">- <%= $CL.translate('SQLCONNECT::DATABASE_DRIVER') %> -</option>
+                            <option value="IBMDB2">IBM DB2</option>
+                            <option value="Mysqli">MySqli</option>
+                            <option value="SQLSrv">MS Sql Srv</option>
+                            <option value="OCI8">Oracle OCI8</option>
+                            <option value="PDOIbm">PDO IBM DB2</option>
+                            <option value="PDOMySql">PDO MySql</option>
+                            <option value="PDOSqlsrv">PDO MS Sql</option>
+                            <option value="PDOOracle">PDO Oracle</option>
+                            <option value="PDOPgSql">PDO Postgre Sql</option>
+                            <option value="PDOSqlite">PDO Sqlite</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span3">
+                <label for="source">
+                    <input type="checkbox" name="source" value="1" />&nbsp;<%= $CL.translate('SQLCONNECT::SOURCE::USE_AS') %>
+                </label>
+            </div>
+            <div class="span3">
+                <label for="source">
+                    <input type="checkbox" name="target" value="1" />&nbsp;<%= $CL.translate('SQLCONNECT::TARGET::USE_AS') %>
+                </label>
+            </div>
+            <div class="span6"></div>
+        </div>
+    </fieldset>
+<div class="hide js-driver-config IBMDB2">
+
+</div>
+<div class="hide js-driver-config Mysqli">
+
+</div>
+<div class="hide js-driver-config SQLSrv">
+
+</div>
+<div class="hide js-driver-config OCI8">
+
+</div>
+<div class="hide js-driver-config PDOIbm">
+
+</div>
+<div class="hide js-driver-config PDOMySql">
+    <fieldset>
+        <legend>PDO MySql</legend>
+        <div class="row-fluid">
+            <div class="span3">
+                <label for="dbname">
+                    <%= $CL.translate('SQLCONNECT::DB_NAME') %>
+                </label>
+            </div>
+            <div class="span3">
+                <input type="text" name="dbname" value="" class="no-fluid12" />
+            </div>
+            <div class="span3">
+                <label for="charset">
+                    <%= $CL.translate('SQLCONNECT::DB_CHARSET') %>
+                </label>
+            </div>
+            <div class="span3">
+                <input type="text" name="charset" value="utf8" class="no-fluid12" />
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span3">
+                <label for="host">
+                    <%= $CL.translate('SQLCONNECT::DB_HOST') %>
+                </label>
+            </div>
+            <div class="span3">
+                <input type="text" name="host" value="" class="no-fluid12" />
+            </div>
+            <div class="span3">
+                <label for="port">
+                    <%= $CL.translate('SQLCONNECT::DB_PORT') %>
+                </label>
+            </div>
+            <div class="span3">
+                <input type="text" name="port" value="" class="no-fluid12" />
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span3">
+                <label for="user">
+                    <%= $CL.translate('SQLCONNECT::DB_USER') %>
+                </label>
+            </div>
+            <div class="span3">
+                <input type="text" name="user" value="" class="no-fluid12" />
+            </div>
+            <div class="span3">
+                <label for="password">
+                    <%= $CL.translate('SQLCONNECT::DB_PASS') %>&nbsp;
+                </label>
+
+            </div>
+            <div class="span3">
+                <input type="password" name="password" value="" class="no-fluid12" />
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span6 offset6">
+                <label for="show-password">
+                    <input type="checkbox" name="show-password" value="show" />&nbsp;<%= $CL.translate('SQLCONNECT::DB_SHOW_PASS') %>
+                </label>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <label for="driverOptions"><%= $CL.translate('SQLCONNECT::DB_DRIVER_OPTIONS') %></label>
+                <p><small>(<% print($CL.translate('GENERAL::CONFIG_JSON_STYLE', true)) %>)</small></p>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <textarea name="driverOptions" class="no-fluid6">"1002" : "SET NAMES UTF8"</textarea>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<div class="hide js-driver-config PDOSqlsrv">
+
+</div>
+<div class="hide js-driver-config PDOOracle">
+
+</div>
+<div class="hide js-driver-config PDOPgSql">
+
+</div>
+<div class="hide js-driver-config PDOSqlite">
+
+</div>
+<div class="hide row-fluid js-error-box">
+    <div class="span12">
+        <div class="alert alert-error"></div>
+    </div>
+</div>
+<div class="row-fluid js-driver-save">
+    <div class="span12">
+        <% print($CL._template('application_form_submit')()) %>
+    </div>
+</div>
+</form>
+
