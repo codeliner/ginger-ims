@@ -4,7 +4,7 @@ namespace SqlConnect;
 return array(
     'connect_modules' => array(
         'SqlConnect' => array(
-            'icon' => 'xampp.jpg',
+            'icon' => 'sql-connect.png',
             'route' => 'sqlconnect_index',
         ),
     ),
