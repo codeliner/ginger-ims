@@ -1,0 +1,52 @@
+<div class="row-fluid">
+    <div class="span12">
+        <h1><%- obj.name %></h1>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <h2><%= $CL.translate('HEADLINE::TABLE::COLUMN') %></h2>
+    </div>
+</div>
+<div class="row-fluid sqlconnect-column-head">
+    <div class="span2">
+        <%= $CL.translate('TABLE::COLUMN::NAME') %>
+    </div>
+    <div class="span2">
+        <%= $CL.translate('TABLE::COLUMN::TYPE') %>
+    </div>
+    <div class="span2">
+        <%= $CL.translate('TABLE::COLUMN::LENGTH') %>
+    </div>
+    <div class="span2">
+        <%= $CL.translate('TABLE::COLUMN::NOTNULL') %>
+    </div>
+    <div class="span2">
+        <%= $CL.translate('TABLE::COLUMN::DEFAULT') %>
+    </div>
+    <div class="span2">
+        <%= $CL.translate('TABLE::COLUMN::AUTOINC') %>
+    </div>
+</div>
+<% _.forEach(obj.columns, function(column) { %>
+<div class="row-fluid sqlconnect-column" data-name="<% column.name %>">
+    <div class="span2">
+        <%- column.name %>
+    </div>
+    <div class="span2">
+        <%- column.type %>
+    </div>
+    <div class="span2">
+        <% if(column.type == "float") { print(column.precision + '.' + column.scale) } else { print(column.length) } %>
+    </div>
+    <div class="span2">
+        <% (column.notnull)? print('<i class="icon-ok"></i>') : print('-'); %>
+    </div>
+    <div class="span2">
+        <%- column.default %>
+    </div>
+    <div class="span2">
+        <% (column.autoincrement)? print('<i class="icon-ok"></i>') : print('-'); %>
+    </div>
+</div>
+<% }) %>
