@@ -3,7 +3,7 @@ namespace Ginger\Rest;
 
 use Cl\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
-use Ginger\Model\Configuration\ConnectorConfiguration;
+use Ginger\Job\Task\JobTask;
 use Ginger\Model\Mapper\MapperLoaderInterface;
 use Ginger\Model\Mapper\AbstractMapper;
 
@@ -67,7 +67,7 @@ class MappersService extends AbstractRestfulController
 
     protected function mapperToArray(AbstractMapper $mapper)
     {
-        $data = ConnectorConfiguration::elementToArray($mapper);
+        $data = JobTask::elementToArray($mapper);
 
         //$data['class'] = str_replace('\\', '.', $data['class']);
 

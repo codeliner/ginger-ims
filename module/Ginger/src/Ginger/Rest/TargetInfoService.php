@@ -55,16 +55,16 @@ class TargetInfoService extends AbstractRestfulController
 
         if ($jobname != "-") {
             $job = $this->jobLoader->loadJob($jobname);
-            $configId = $this->getEvent()->getRouteMatch()->getParam('configid');
-            $configs = $job->getConfigurations();
+            $taskId = $this->getEvent()->getRouteMatch()->getParam('taskId');
+            $tasks = $job->getTasks();
 
-            foreach ($configs as $config) {
-                if ($config->getId() == $configId) {
+            foreach ($tasks as $task) {
+                if ($task->getId() == $taskId) {
                     break;
                 }
             }
 
-            $target = $config->getTarget();
+            $target = $task->getTarget();
 
             if ($target->getId() != $id) {
                 $target = $this->targetLoader->getTarget($id);

@@ -4,7 +4,7 @@ namespace Ginger\Job;
 use Cl\Test\PHPUnitTestCase;
 use Zend\EventManager\EventManager;
 use Ginger\Model\Connector\Connector;
-use Ginger\Model\Configuration\ConnectorConfiguration;
+use Ginger\Job\Task\JobTask;
 
 /**
  * Test class for Job.
@@ -40,17 +40,17 @@ class JobTest extends PHPUnitTestCase
         $this->object->setTranslator(static::getApplication()->getServiceManager()->get('translator'));
     }
 
-    protected function getConfig($configId)
+    protected function getTask($taskId)
     {
-        $config = new ConnectorConfiguration();
-        $config->setId(1);
-        $config->setSource(new \MockObject\Source($configId, "testsource".$configId, "/testsource".$configId, "MockObject"));
-        $config->setTarget(new \MockObject\Target($configId, "testtarget".$configId, "/testtarget".$configId, "MockObject"));
-        $config->setSourceLoader(new \MockObject\SourceLoader());
-        $config->setTargetLoader(new \MockObject\TargetLoader());
-        $config->setMapperLoader(new \MockObject\MapperLoader());
+        $task = new JobTask();
+        $task->setId($taskId);
+        $task->setSource(new \MockObject\Source($taskId, "testsource".$taskId, "/testsource".$taskId, "MockObject"));
+        $task->setTarget(new \MockObject\Target($taskId, "testtarget".$taskId, "/testtarget".$taskId, "MockObject"));
+        $task->setSourceLoader(new \MockObject\SourceLoader());
+        $task->setTargetLoader(new \MockObject\TargetLoader());
+        $task->setMapperLoader(new \MockObject\MapperLoader());
 
-        return $config;
+        return $task;
     }
 
     protected function getLogMessages($messages, $type = null) {
@@ -91,33 +91,33 @@ class JobTest extends PHPUnitTestCase
     }
 
     /**
-     * @covers Ginger\Job\Job::getConfigurations
+     * @covers Ginger\Job\Job::getTasks
      */
-    public function testGetConfigurations()
+    public function testGetTasks()
     {
-        $this->assertEquals(0, count($this->object->getConfigurations()));
+        $this->assertEquals(0, count($this->object->getTasks()));
 
-        $config = $this->getConfig(1);
+        $task = $this->getTask(1);
 
-        $this->object->setConfigurations(array($config));
+        $this->object->setTasks(array($task));
 
-        $this->assertEquals(1, count($this->object->getConfigurations()));
-        $this->assertEquals($config, $this->object->getConfigurations()[0]);
+        $this->assertEquals(1, count($this->object->getTasks()));
+        $this->assertEquals($task, $this->object->getTasks()[0]);
     }
 
     /**
-     * @covers Ginger\Job\Job::addConfiguration
+     * @covers Ginger\Job\Job::addTask
      */
-    public function testAddConfiguration()
+    public function testAddTask()
     {
-        $this->assertEquals(0, count($this->object->getConfigurations()));
+        $this->assertEquals(0, count($this->object->getTasks()));
 
-        $config = $this->getConfig(1);
+        $task = $this->getTask(1);
 
-        $this->object->addConfiguration($config);
+        $this->object->addTask($task);
 
-        $this->assertEquals(1, count($this->object->getConfigurations()));
-        $this->assertEquals($config, $this->object->getConfigurations()[0]);
+        $this->assertEquals(1, count($this->object->getTasks()));
+        $this->assertEquals($task, $this->object->getTasks()[0]);
     }
 
     /**
@@ -142,9 +142,9 @@ class JobTest extends PHPUnitTestCase
      */
     public function testSuccessfulRun()
     {
-        $config = $this->getConfig(1);
+        $task = $this->getTask(1);
 
-        $this->object->addConfiguration($config);
+        $this->object->addTask($task);
 
         $success = $this->object->run();
 
@@ -159,26 +159,26 @@ class JobTest extends PHPUnitTestCase
         );
 
         $jobRun = $this->logger->getJobRun(0);
-        $configRun = $jobRun->getConfigurationRuns()[0];
+        $taskRun = $jobRun->getTaskRuns()[0];
 
         $this->assertInstanceOf("DateTime", $jobRun->getStartTime());
         $this->assertInstanceOf("DateTime", $jobRun->getEndTime());
         $this->assertTrue($jobRun->getSuccess());
-        $this->assertInstanceOf("DateTime", $configRun->getStartTime());
-        $this->assertInstanceOf("DateTime", $configRun->getEndTime());
-        $this->assertTrue($configRun->getSuccess());
-        $this->assertEquals($checkMessages, $this->getLogMessages($configRun->getMessages()));
+        $this->assertInstanceOf("DateTime", $taskRun->getStartTime());
+        $this->assertInstanceOf("DateTime", $taskRun->getEndTime());
+        $this->assertTrue($taskRun->getSuccess());
+        $this->assertEquals($checkMessages, $this->getLogMessages($taskRun->getMessages()));
     }
 
     public function testBreakRunWithFailure()
     {
-        $failureConfig = $this->getConfig(2);
+        $failureTask = $this->getTask(2);
 
-        $failureConfig->setMapper(new \MockObject\MapperWithError(2, "errormapper", "/errormapper", "MockObject"));
+        $failureTask->setMapper(new \MockObject\MapperWithError(2, "errormapper", "/errormapper", "MockObject"));
 
-        $successConfig = $this->getConfig(1);
+        $successTask = $this->getTask(1);
 
-        $this->object->setConfigurations(array($failureConfig, $successConfig));
+        $this->object->setTasks(array($failureTask, $successTask));
 
         $success = $this->object->run();
 
@@ -195,8 +195,8 @@ class JobTest extends PHPUnitTestCase
 
         $messageTexts = array();
 
-        foreach($jobRun->getConfigurationRuns() as $configRun) {
-            $partTexts = $this->getLogMessages($configRun->getMessages());
+        foreach($jobRun->getTaskRuns() as $taskRun) {
+            $partTexts = $this->getLogMessages($taskRun->getMessages());
             $messageTexts = array_merge($messageTexts, $partTexts);
         }
 
@@ -206,26 +206,26 @@ class JobTest extends PHPUnitTestCase
         $this->assertInstanceOf("DateTime", $jobRun->getEndTime());
         $this->assertFalse($jobRun->getSuccess());
 
-        $configRun1 = $jobRun->getConfigurationRuns()[0];
-        $this->assertInstanceOf("DateTime", $configRun1->getStartTime());
-        $this->assertInstanceOf("DateTime", $configRun1->getEndTime());
-        $this->assertFalse($configRun1->getSuccess());
-        $this->assertEquals(3, $configRun1->getTotalItemCount());
-        $this->assertEquals(1, $configRun1->getInsertedItemCount());
+        $taskRun1 = $jobRun->getTaskRuns()[0];
+        $this->assertInstanceOf("DateTime", $taskRun1->getStartTime());
+        $this->assertInstanceOf("DateTime", $taskRun1->getEndTime());
+        $this->assertFalse($taskRun1->getSuccess());
+        $this->assertEquals(3, $taskRun1->getTotalItemCount());
+        $this->assertEquals(1, $taskRun1->getInsertedItemCount());
 
         
-        $this->assertFalse(isset($jobRun->getConfigurationRuns()[1]));
+        $this->assertFalse(isset($jobRun->getTaskRuns()[1]));
     }
 
     public function testNotBreakRunWithFailure()
     {
-        $failureConfig = $this->getConfig(2);
+        $failureTask = $this->getTask(2);
 
-        $failureConfig->setMapper(new \MockObject\MapperWithError(2, "errormapper", "/errormapper", "MockObject"));
+        $failureTask->setMapper(new \MockObject\MapperWithError(2, "errormapper", "/errormapper", "MockObject"));
 
-        $successConfig = $this->getConfig(1);
+        $successTask = $this->getTask(1);
 
-        $this->object->setConfigurations(array($failureConfig, $successConfig));
+        $this->object->setTasks(array($failureTask, $successTask));
 
         $this->object->setBreakOnFailure(false);
 
@@ -248,8 +248,8 @@ class JobTest extends PHPUnitTestCase
 
         $messageTexts = array();
 
-        foreach($jobRun->getConfigurationRuns() as $configRun) {
-            $partTexts = $this->getLogMessages($configRun->getMessages());
+        foreach($jobRun->getTaskRuns() as $taskRun) {
+            $partTexts = $this->getLogMessages($taskRun->getMessages());
             $messageTexts = array_merge($messageTexts, $partTexts);
         }
 
@@ -261,8 +261,8 @@ class JobTest extends PHPUnitTestCase
 
         $messageTexts = array();
 
-        foreach($jobRun->getConfigurationRuns() as $configRun) {
-            $partTexts = $this->getLogMessages($configRun->getMessages(), "error");
+        foreach($jobRun->getTaskRuns() as $taskRun) {
+            $partTexts = $this->getLogMessages($taskRun->getMessages(), "error");
             $messageTexts = array_merge($messageTexts, $partTexts);
         }
 
@@ -272,24 +272,24 @@ class JobTest extends PHPUnitTestCase
         $this->assertInstanceOf("DateTime", $jobRun->getEndTime());
         $this->assertTrue($jobRun->getSuccess());
 
-        $configRun1 = $jobRun->getConfigurationRuns()[0];
-        $this->assertInstanceOf("DateTime", $configRun1->getStartTime());
-        $this->assertInstanceOf("DateTime", $configRun1->getEndTime());
-        $this->assertFalse($configRun1->getSuccess());
-        $this->assertEquals(3, $configRun1->getTotalItemCount());
-        $this->assertEquals(1, $configRun1->getInsertedItemCount());
+        $taskRun1 = $jobRun->getTaskRuns()[0];
+        $this->assertInstanceOf("DateTime", $taskRun1->getStartTime());
+        $this->assertInstanceOf("DateTime", $taskRun1->getEndTime());
+        $this->assertFalse($taskRun1->getSuccess());
+        $this->assertEquals(3, $taskRun1->getTotalItemCount());
+        $this->assertEquals(1, $taskRun1->getInsertedItemCount());
 
-        $configRun2 = $jobRun->getConfigurationRuns()[1];
-        $this->assertInstanceOf("DateTime", $configRun2->getStartTime());
-        $this->assertInstanceOf("DateTime", $configRun2->getEndTime());
-        $this->assertTrue($configRun2->getSuccess());
-        $this->assertEquals(3, $configRun2->getTotalItemCount());
-        $this->assertEquals(3, $configRun2->getInsertedItemCount());
+        $taskRun2 = $jobRun->getTaskRuns()[1];
+        $this->assertInstanceOf("DateTime", $taskRun2->getStartTime());
+        $this->assertInstanceOf("DateTime", $taskRun2->getEndTime());
+        $this->assertTrue($taskRun2->getSuccess());
+        $this->assertEquals(3, $taskRun2->getTotalItemCount());
+        $this->assertEquals(3, $taskRun2->getInsertedItemCount());
     }
 
     public function testHandlingOfFeatures()
     {
-        $config = $this->getConfig(1);
+        $task = $this->getTask(1);
 
         $feature = new \MockObject\ValueChangeFeature(1, 'ValueChangeFeature', '/value-change-feature', 'MockObject');
         $feature->setOptions(array(
@@ -305,11 +305,11 @@ class JobTest extends PHPUnitTestCase
             )
         ));
         $target = new \MockObject\EasyTarget(2, 'EasyTarget', '/easy-target', 'MockObject');
-        $config->addFeature($feature);
-        $config->setSource($source);
-        $config->setTarget($target);
+        $task->addFeature($feature);
+        $task->setSource($source);
+        $task->setTarget($target);
 
-        $this->object->addConfiguration($config);
+        $this->object->addTask($task);
 
         $success = $this->object->run();
 
@@ -324,9 +324,9 @@ class JobTest extends PHPUnitTestCase
         $this->assertEquals($check, $target->getItems());
 
         //check that feature is detatched after run
-        $config = $this->getConfig(1);
+        $task = $this->getTask(1);
 
-        $this->object->setConfigurations(array($config));
+        $this->object->setTasks(array($task));
 
         $success = $this->object->run();
 
@@ -341,8 +341,8 @@ class JobTest extends PHPUnitTestCase
         );
 
         $jobRun = $this->logger->getJobRun(1);
-        $configRun = $jobRun->getConfigurationRuns()[0];
+        $taskRun = $jobRun->getTaskRuns()[0];
 
-        $this->assertEquals($checkMessages, $this->getLogMessages($configRun->getMessages()));
+        $this->assertEquals($checkMessages, $this->getLogMessages($taskRun->getMessages()));
     }
 }

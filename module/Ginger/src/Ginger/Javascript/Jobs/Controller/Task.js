@@ -6,9 +6,9 @@ $CL.require("Ginger.Jobs.Collection.Jobs");
 $CL.require("Ginger.Jobs.Entity.Job");
 
 
-Controller.Configuration = function() {};
+Controller.Task = function() {};
 
-Controller.Configuration = $CL.extendClass(Controller.Configuration, Cl.Application.Mvc.AbstractController, {
+Controller.Task = $CL.extendClass(Controller.Task, Cl.Application.Mvc.AbstractController, {
     jobCollection : null,
     sourceCollection : null,
     targetCollection : null,
@@ -39,30 +39,30 @@ Controller.Configuration = $CL.extendClass(Controller.Configuration, Cl.Applicat
         this.getMvcEvent().stopPropagation();
 
         var jobname = this.getMvcEvent().getRouteMatch().getParam('jobname', '-'),
-        config = this.getMvcEvent().getRouteMatch().getParam('config', {}),
+        task = this.getMvcEvent().getRouteMatch().getParam('task', {}),
         callback = this.getMvcEvent().getRouteMatch().getParam('callback', function() {}),
-        configCollection = this.jobCollection.get(jobname).get('configurations');
+        taskCollection = this.jobCollection.get(jobname).get('tasks');
         $CL.app().wait();
-        if (!$CL.isDefined(config['id'])) {
+        if (!$CL.isDefined(task['id'])) {
 
-            configCollection.create(config, {
+            taskCollection.create(task, {
                 success : function(model) {
                     $CL.app().stopWait();
                     callback(model);
                 },
                 error : function() {
-                    $CL.app().stopWait().alert("Creating config failed. See Browser Console for more details.");
+                    $CL.app().stopWait().alert("Creating task failed. See Browser Console for more details.");
                 }
             });
         } else {
-            var configEntity = configCollection.get(config.id);
-            configEntity.save(config, {
+            var taskEntity = taskCollection.get(task.id);
+            taskEntity.save(task, {
                 success : function(model) {
                     $CL.app().stopWait();
                     callback(model);
                 },
                 error : function() {
-                    $CL.app().stopWait().alert("Save config data failed.");
+                    $CL.app().stopWait().alert("Save task data failed.");
                 }
             });
         }
@@ -70,16 +70,16 @@ Controller.Configuration = $CL.extendClass(Controller.Configuration, Cl.Applicat
     removeAction : function() {
         this.getMvcEvent().stopPropagation();
         var jobname = this.getMvcEvent().getRouteMatch().getParam('jobname', '-'),
-        configCollection = this.jobCollection.get(jobname).get('configurations'),
-        configId = this.getMvcEvent().getRouteMatch().getParam('id', 0),
-        configEntity = configCollection.get(configId);
+        taskCollection = this.jobCollection.get(jobname).get('tasks'),
+        taskId = this.getMvcEvent().getRouteMatch().getParam('id', 0),
+        taskEntity = taskCollection.get(taskId);
 
-        if (configEntity) {
-            configEntity.destroy().fail(function() {
-                $CL.app().alert('Failed to remove config with id: ' + configEntity.get('id'));
+        if (taskEntity) {
+            taskEntity.destroy().fail(function() {
+                $CL.app().alert('Failed to remove task with id: ' + taskEntity.get('id'));
             });
         } else {
-            $CL.app().alert('Can not remove config with id: ":id". No entity found.'.replace(':id', configId));
+            $CL.app().alert('Can not remove task with id: ":id". No entity found.'.replace(':id', taskId));
         }
     },
     _processView : function(action) {
@@ -98,18 +98,18 @@ Controller.Configuration = $CL.extendClass(Controller.Configuration, Cl.Applicat
                 //we define the finish steps in a function, so we can call them in different szenarios
                 var _finish  = $CL.bind(function(viewData) {
                     this.view.setData(viewData);
-                    $CL.get('Ginger.Jobs.View.Configuration.Sidebar').setData(viewData);
+                    $CL.get('Ginger.Jobs.View.Task.Sidebar').setData(viewData);
                     this.getMvcEvent().setResponse(this.view);
                     $CL.app().stopWait().continueDispatch(this.getMvcEvent());
                 }, this);
 
-                //we also store the logic to fetch config data in a function
-                var _getConfigData = $CL.bind(function(job) {
-                    var configId = this.getMvcEvent().getRouteMatch().getParam('id');
+                //we also store the logic to fetch task data in a function
+                var _getTaskData = $CL.bind(function(job) {
+                    var taskId = this.getMvcEvent().getRouteMatch().getParam('id');
 
-                    var config = job.get('configurations').get(configId);
+                    var task = job.get('tasks').get(taskId);
                     //clone nested data too
-                    return $CL.clone(config.toJSON());
+                    return $CL.clone(task.toJSON());
                 }, this);
 
                 var viewData = {
@@ -118,19 +118,19 @@ Controller.Configuration = $CL.extendClass(Controller.Configuration, Cl.Applicat
                     mappers : this.mapperCollection.toJSON()
                 };
 
-                //we need the config settings, so first we have to get the job and then fetch job
-                //dependant config
+                //we need the task settings, so first we have to get the job and then fetch job
+                //dependant task
                 if (this.jobCollection.isEmpty()) {
                     this.jobCollection.fetch({
                         success : $CL.bind(function() {
                             var job = this.jobCollection.get(jobname);
 
                             //we need an extra call for the detailed job data, fetching the list
-                            //only returns job data without dependencies (configs and jobruns)
+                            //only returns job data without dependencies (tasks and jobruns)
                             job.fetch({
                                 success : $CL.bind(function() {
                                     if (action == "edit") {
-                                        viewData['config'] = _getConfigData(job);
+                                        viewData['task'] = _getTaskData(job);
                                     }
                                     _finish(viewData);
                                 }, this),
@@ -149,7 +149,7 @@ Controller.Configuration = $CL.extendClass(Controller.Configuration, Cl.Applicat
 
                     if (action == "edit") {
                        if (action == "edit") {
-                            viewData['config'] = _getConfigData(job);
+                            viewData['task'] = _getTaskData(job);
                         }
                     }
                 }
@@ -184,8 +184,8 @@ Controller.Configuration = $CL.extendClass(Controller.Configuration, Cl.Applicat
 
         this._addBreadcrumbs(jobname, action);
 
-        this.getMvcEvent().setParam('sidebar', $CL.get('Ginger.Jobs.View.Configuration.Sidebar'));
-        this.getMvcEvent().setParam('footer', $CL.get('Ginger.Jobs.View.Configuration.Footer'));
+        this.getMvcEvent().setParam('sidebar', $CL.get('Ginger.Jobs.View.Task.Sidebar'));
+        this.getMvcEvent().setParam('footer', $CL.get('Ginger.Jobs.View.Task.Footer'));
 
         queue.close();
 
@@ -195,8 +195,8 @@ Controller.Configuration = $CL.extendClass(Controller.Configuration, Cl.Applicat
     _addBreadcrumbs : function(jobname, action) {
 
         var translations = {
-            'add' : $CL.translate('HEADLINE::JOBS::CONFIGURATION::ADD'),
-            'edit' : $CL.translate('HEADLINE::JOBS::CONFIGURATION::EDIT')
+            'add' : $CL.translate('HEADLINE::JOBS::TASK::ADD'),
+            'edit' : $CL.translate('HEADLINE::JOBS::TASK::EDIT')
         };
 
         var breadcrumbs = [

@@ -37,15 +37,15 @@ class JobdataController extends AbstractActionController
         $job = $this->jobLoader->loadJob($jobname);
 
         if ($job) {
-            $configs = $job->getConfigurations();
+            $tasks = $job->getTasks();
 
-            foreach ($configs as $config) {
-                if ($config->getId() == $configId) {
-                    $configData = $config->getArrayCopy();
-                    unset($configData['id']);
+            foreach ($tasks as $task) {
+                if ($task->getId() == $configId) {
+                    $taskData = $task->getArrayCopy();
+                    unset($taskData['id']);
 
                     return $this->sendDownload(
-                        \Zend\Json\Encoder::encode($configData),
+                        \Zend\Json\Encoder::encode($taskData),
                         'application/json',
                         Formatter::urlClean($job->getName()) . '_' . 'configuration_' . $configId . '.json'
                         );

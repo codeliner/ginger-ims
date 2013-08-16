@@ -32,7 +32,7 @@ Partial.SourceDirectoryOptions = $CL.extendClass(Partial.SourceDirectoryOptions,
     },
     setMainEditView : function(editView) {
         if (_.isNull(this.mainEditView) || this.mainEditView != editView) {
-            editView.on('config-save-post', this.onPostConfigSave, this);
+            editView.on('task-save-post', this.onPostTaskSave, this);
             this.mainEditView = editView;
         }
     },
@@ -63,13 +63,13 @@ Partial.SourceDirectoryOptions = $CL.extendClass(Partial.SourceDirectoryOptions,
         }
     },
     /**
-     * Listener for the config-save-post event of the main edit view
+     * Listener for the task-save-post event of the main edit view
      *
-     * @param {Object} config
+     * @param {Object} task
      *
      * @return void
      */
-    onPostConfigSave : function(config) {
+    onPostTaskSave : function(task) {
         //maybe source options are changed, so call refreshMapper to inform the main view about a possible change
         this.mainEditView.refreshMapper();
     },

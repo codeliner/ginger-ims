@@ -32,7 +32,7 @@ Controller.Jobrun = $CL.extendClass(Controller.Jobrun, Cl.Application.Mvc.Abstra
                 return $CL.get('Ginger.Jobs.View.Jobrun.Show').setData(
                     _.extend({
                         jobname : jobname,
-                        configurations : job.get('configurations').toJSON()
+                        tasks : job.get('tasks').toJSON()
                     }, jobrun.toJSON())
                 );
             }, this);

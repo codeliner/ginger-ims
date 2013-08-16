@@ -3,15 +3,15 @@ namespace Ginger\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * Description of ConfigurationRunMessage
+ * Description of TaskRunMessage
  *
  * @ORM\Entity
- * @ORM\Table(name="configuration_run_message")
+ * @ORM\Table(name="task_run_message")
  *
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  * @copyright (c) 2013, Alexander Miertsch
  */
-class ConfigurationRunMessage
+class TaskRunMessage
 {
     /**
      * @ORM\Id
@@ -36,10 +36,10 @@ class ConfigurationRunMessage
     private $text;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Ginger\Entity\ConfigurationRun", cascade={"persist", "merge"}, fetch="LAZY")
-     * @ORM\JoinColumn(name="configuration_run_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Ginger\Entity\TaskRun", cascade={"persist", "merge"}, fetch="LAZY")
+     * @ORM\JoinColumn(name="task_run_id", referencedColumnName="id")
      */
-    private $configurationRun;
+    private $taskRun;
 
     public function getId()
     {
@@ -81,13 +81,13 @@ class ConfigurationRunMessage
         $this->text = $text;
     }
 
-    public function getConfigurationRun()
+    public function getTaskRun()
     {
-        return $this->configurationRun;
+        return $this->taskRun;
     }
 
-    public function setConfigurationRun($configurationRun)
+    public function setTaskRun($taskRun)
     {
-        $this->configurationRun = $configurationRun;
+        $this->taskRun = $taskRun;
     }
 }

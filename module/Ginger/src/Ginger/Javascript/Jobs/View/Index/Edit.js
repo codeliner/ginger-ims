@@ -6,21 +6,21 @@ Index.Edit = function() {};
 
 Index.Edit = $CL.extendClass(Index.Edit, Cl.Backbone.View, {
     events : {
-        'click .js-add-configuration' : 'onConfigAddClick',
-        'click .js-configuration .js-edit' : 'onConfigEditClick',
-        'click .js-configuration .js-remove' : 'onConfigRemoveClick',
+        'click .js-add-task' : 'onTaskAddClick',
+        'click .js-task .js-edit' : 'onTaskEditClick',
+        'click .js-task .js-remove' : 'onTaskRemoveClick',
         'click label[for=break_on_failure]' : 'onBreakOnFailureClick',
         'click .js-save-btn' : 'onSaveClick',
         'click .js-remove-job-btn' : 'onRemoveJobClick'
     },
-    onConfigAddClick : function(e) {
+    onTaskAddClick : function(e) {
         //just trigger save job in the background, action is triggered by a.href, so do not prevent default behavior here
         $CL.app().router.forward('jobs_job_save', {
             jobname : this.data.name,
             jobData : this._getJobData()
         });
     },
-    onConfigEditClick : function(e) {
+    onTaskEditClick : function(e) {
         e.preventDefault();
 
         var $a = $CL.jTarget(e.target, 'a');
@@ -30,16 +30,16 @@ Index.Edit = $CL.extendClass(Index.Edit, Cl.Backbone.View, {
             jobData : this._getJobData()
         });
 
-        $CL.app().router.callRoute('jobs_configuration_edit', {
+        $CL.app().router.callRoute('jobs_task_edit', {
             jobname : this.data.name,
             id : $a.data('id')
         });
     },
-    onConfigRemoveClick : function(e) {
+    onTaskRemoveClick : function(e) {
         e.preventDefault();
         var $a = $CL.jTarget(e.target, 'a');
 
-        $CL.app().router.forward('jobs_configuration_remove', {jobname : this.data.name, id : $a.data('id')});
+        $CL.app().router.forward('jobs_task_remove', {jobname : this.data.name, id : $a.data('id')});
 
         $a.parents('.ts-tr').remove();
     },

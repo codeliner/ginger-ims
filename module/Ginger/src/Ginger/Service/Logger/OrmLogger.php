@@ -75,64 +75,64 @@ class OrmLogger implements Job\Run\LoggerInterface
         return $query->getQuery()->getResult(AbstractQuery::HYDRATE_SINGLE_SCALAR);
     }
 
-    public function logMessage($configurationRunId, Job\Run\Message $message)
+    public function logMessage($taskRunId, Job\Run\Message $message)
     {
-        $configRunEntity = $this->entityManager
-            ->getRepository('Ginger\Entity\ConfigurationRun')->find($configurationRunId);
+        $taskRunEntity = $this->entityManager
+            ->getRepository('Ginger\Entity\TaskRun')->find($taskRunId);
 
-        if (is_null($configRunEntity)) {
+        if (is_null($taskRunEntity)) {
             throw new Job\Run\Exception\InvalidArgumentException(
-                'Configuration run ID: '
-                . $configurationRunId
+                'task run ID: '
+                . $taskRunId
                 . ' is invalid. Entity can not be found!'
                 );
         }
 
-        $messageEntity = new Entity\ConfigurationRunMessage();
+        $messageEntity = new Entity\TaskRunMessage();
 
         $messageEntity->setText($message->getText());
         $messageEntity->setType($message->getType());
         $messageEntity->setTimestamp($message->getTimestamp());
 
-        $configRunEntity->addConfigurationRunMessage($messageEntity);
+        $taskRunEntity->addTaskRunMessage($messageEntity);
 
         $this->entityManager->flush();
     }
 
-    public function startConfigurationRun($jobRunId, $configurationId, $totalItemCount)
+    public function startTaskRun($jobRunId, $taskId, $totalItemCount)
     {
         $jobRunEntity = $this->entityManager->getRepository('Ginger\Entity\JobRun')->find($jobRunId);
 
         if (is_null($jobRunEntity->getStartTime()) || !is_null($jobRunEntity->getEndTime())) {
             throw new Job\Run\Exception\JobNotStartedException(
                 sprintf(
-                    'Can not start a config run. No active jobrun found for job "%s"',
+                    'Can not start a task run. No active jobrun found for job "%s"',
                     $jobRunEntity->getName()
                     ));
         }
 
-        $configEntity = $this->entityManager->getRepository('Ginger\Entity\Configuration')->find($configurationId);
+        $taskEntity = $this->entityManager->getRepository('Ginger\Entity\Task')->find($taskId);
 
-        if (is_null($configEntity)) {
+        if (is_null($taskEntity)) {
             throw new Job\Run\Exception\InvalidArgumentException(
-                'Invalid configurationId: ' . $configurationId . '. '
-                . 'Configuration can not be found.'
+                'Invalid taskId: ' . $taskId . '. '
+                . 'Task can not be found.'
                 );
         }
 
-        $configRunEntity = new Entity\ConfigurationRun();
+        $taskRunEntity = new Entity\TaskRun();
 
-        $configRunEntity->setStartTime(new \DateTime());
+        $taskRunEntity->setStartTime(new \DateTime());
 
-        $configRunEntity->setConfiguration($configEntity);
+        $taskRunEntity->setTask($taskEntity);
 
-        $configRunEntity->setTotalItemCount($totalItemCount);
+        $taskRunEntity->setTotalItemCount($totalItemCount);
 
-        $jobRunEntity->addConfigurationRun($configRunEntity);
+        $jobRunEntity->addTaskRun($taskRunEntity);
 
         $this->entityManager->flush();
 
-        return $configRunEntity->getId();
+        return $taskRunEntity->getId();
     }
 
     public function startJobRun($jobName)
@@ -156,22 +156,22 @@ class OrmLogger implements Job\Run\LoggerInterface
         return $jobRunEntity->getId();
     }
 
-    public function stopConfigurationRun($configurationRunId, $success, $insertedItemCount)
+    public function stopTaskRun($taskRunId, $success, $insertedItemCount)
     {
-        $configRunEntity = $this->entityManager
-            ->getRepository('Ginger\Entity\ConfigurationRun')->find($configurationRunId);
+        $taskRunEntity = $this->entityManager
+            ->getRepository('Ginger\Entity\TaskRun')->find($taskRunId);
 
-        if (is_null($configRunEntity)) {
+        if (is_null($taskRunEntity)) {
             throw new Job\Run\Exception\InvalidArgumentException(
-                'Configuration run ID: '
-                . $configurationRunId
+                'Task run ID: '
+                . $taskRunId
                 . ' is invalid. Entity can not be found!'
                 );
         }
 
-        $configRunEntity->setSuccess($success);
-        $configRunEntity->setInsertedItemCount($insertedItemCount);
-        $configRunEntity->setEndTime(new \DateTime());
+        $taskRunEntity->setSuccess($success);
+        $taskRunEntity->setInsertedItemCount($insertedItemCount);
+        $taskRunEntity->setEndTime(new \DateTime());
 
         $this->entityManager->flush();
     }
@@ -218,38 +218,38 @@ class OrmLogger implements Job\Run\LoggerInterface
         $jobRun->setEndTime($jobRunEntity->getEndTime());
         $jobRun->setSuccess($jobRunEntity->getSuccess());
 
-        $configurationRuns = array();
+        $taskRuns = array();
 
-        foreach($jobRunEntity->getConfigurationRuns() as $configurationRunEntity) {
-            $configurationRuns[] = $this->hydrateConfigurationRun($configurationRunEntity);
+        foreach($jobRunEntity->getTaskRuns() as $taskRunEntity) {
+            $taskRuns[] = $this->hydrateTaskRun($taskRunEntity);
         }
-        $jobRun->setConfigurationRuns($configurationRuns);
+        $jobRun->setTaskRuns($taskRuns);
 
         return $jobRun;
     }
 
-    protected function hydrateConfigurationRun($configurationRunEntity)
+    protected function hydrateTaskRun($taskRunEntity)
     {
-        $configurationRun = new Job\Run\ConfigurationRun($configurationRunEntity->getId());
-        $configurationRun->setConfigurationId($configurationRunEntity->getConfiguration()->getId());
-        $configurationRun->setStartTime($configurationRunEntity->getStartTime());
-        $configurationRun->setEndTime($configurationRunEntity->getEndTime());
-        $configurationRun->setTotalItemCount($configurationRunEntity->getTotalItemCount());
-        $configurationRun->setInsertedItemCount($configurationRunEntity->getInsertedItemCount());
-        $configurationRun->setSuccess($configurationRunEntity->getSuccess());
+        $taskRun = new Job\Run\TaskRun($taskRunEntity->getId());
+        $taskRun->setTaskId($taskRunEntity->getTask()->getId());
+        $taskRun->setStartTime($taskRunEntity->getStartTime());
+        $taskRun->setEndTime($taskRunEntity->getEndTime());
+        $taskRun->setTotalItemCount($taskRunEntity->getTotalItemCount());
+        $taskRun->setInsertedItemCount($taskRunEntity->getInsertedItemCount());
+        $taskRun->setSuccess($taskRunEntity->getSuccess());
         $messages = array();
-        foreach ($configurationRunEntity->getConfigurationRunMessages() as $messageEntity) {
-            $messages[] = $this->hydrateConfigurationRunMessage($messageEntity);
+        foreach ($taskRunEntity->getTaskRunMessages() as $messageEntity) {
+            $messages[] = $this->hydrateTaskRunMessage($messageEntity);
         }
-        $configurationRun->setMessages($messages);
-        return $configurationRun;
+        $taskRun->setMessages($messages);
+        return $taskRun;
     }
 
-    protected function hydrateConfigurationRunMessage($configurationRunMessageEntity)
+    protected function hydrateTaskRunMessage($taskRunMessageEntity)
     {
-        $message = new Job\Run\Message($configurationRunMessageEntity->getType());
-        $message->setText($configurationRunMessageEntity->getText());
-        $message->setTimestamp($configurationRunMessageEntity->getTimestamp());
+        $message = new Job\Run\Message($taskRunMessageEntity->getType());
+        $message->setText($taskRunMessageEntity->getText());
+        $message->setTimestamp($taskRunMessageEntity->getTimestamp());
         return $message;
     }
 }

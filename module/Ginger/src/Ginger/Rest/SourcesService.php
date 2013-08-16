@@ -3,7 +3,7 @@ namespace Ginger\Rest;
 
 use Cl\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
-use Ginger\Model\Configuration\ConnectorConfiguration;
+use Ginger\Job\Task\JobTask;
 use Ginger\Model\Source\SourceLoaderInterface;
 use Ginger\Model\Source\AbstractSource;
 
@@ -68,7 +68,7 @@ class SourcesService extends AbstractRestfulController
 
     protected function sourceToArray(AbstractSource $source)
     {
-        $data = ConnectorConfiguration::elementToArray($source);
+        $data = JobTask::elementToArray($source);
 
         $data['data_type'] = $source->getDataType();
 

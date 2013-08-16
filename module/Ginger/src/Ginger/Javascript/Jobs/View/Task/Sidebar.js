@@ -1,11 +1,11 @@
-var Configuration = $CL.namespace('Ginger.Jobs.View.Configuration');
+var Task = $CL.namespace('Ginger.Jobs.View.Task');
 
 $CL.require('Cl.Backbone.View');
 $CL.require('Cl.Jquery.Plugin.ClickableSort');
 
-Configuration.Sidebar = function() {};
+Task.Sidebar = function() {};
 
-Configuration.Sidebar = $CL.extendClass(Configuration.Sidebar, Cl.Backbone.View, {
+Task.Sidebar = $CL.extendClass(Task.Sidebar, Cl.Backbone.View, {
     featureCollection : null,
     elementLoader : null,
     activatedFeatures : null,
@@ -40,8 +40,8 @@ Configuration.Sidebar = $CL.extendClass(Configuration.Sidebar, Cl.Backbone.View,
         this.activatedFeatures = [];
         this.editFeatureId = -1;
 
-        if (this.data.config && this.data.config.features) {
-            _.each(this.data.config.features, function(featureData) {
+        if (this.data.task && this.data.task.features) {
+            _.each(this.data.task.features, function(featureData) {
                 this.activatedFeatures.push({
                     elementData : featureData,
                     options : featureData.options
@@ -59,15 +59,15 @@ Configuration.Sidebar = $CL.extendClass(Configuration.Sidebar, Cl.Backbone.View,
     setFeatureCollection : function(featureCollection) {
         this.featureCollection = featureCollection;
     },
-    onConfigSave : function(configData) {
-        configData['features'] = [];
+    onTaskSave : function(taskData) {
+        taskData['features'] = [];
         if (this.activatedFeatures && this.activatedFeatures.length > 0) {
             $('#activated-features .ui-sort-item').each($CL.bind(function(i, row) {
                 var featureId = $(row).find('.js-edit').data('id');
                 $CL.log(featureId);
                 var featureData = this._getFeatureData(featureId);
 
-                configData['features'].push({
+                taskData['features'].push({
                     id : featureData.elementData.id,
                     options : featureData.elementData.options
                 });

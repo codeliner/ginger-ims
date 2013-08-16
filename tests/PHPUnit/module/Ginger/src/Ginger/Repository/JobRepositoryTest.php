@@ -4,9 +4,9 @@ namespace Ginger\Repository;
 use Cl\Test\DoctrineTestCase;
 use Ginger\Model\Connector\Connector;
 use Ginger\Job\Job;
-use Ginger\Model\Configuration\ConnectorConfiguration;
+use Ginger\Job\Task\JobTask;
 use Ginger\Entity\Job as JobEntity;
-use Ginger\Entity\Configuration as ConfigEntity;
+use Ginger\Entity\Task as TaskEntity;
 use MockObject\Source;
 use MockObject\Target;
 use MockObject\Logger;
@@ -33,7 +33,7 @@ class JobRepositoryTest extends DoctrineTestCase
     protected function setUp()
     {
         $this->createEntitySchema('Ginger\Entity\Job');
-        $this->createEntitySchema('Ginger\Entity\Configuration');
+        $this->createEntitySchema('Ginger\Entity\Task');
 
         $this->object = $this->getTestEntityManager()->getRepository('Ginger\Entity\Job');
 
@@ -55,14 +55,14 @@ class JobRepositoryTest extends DoctrineTestCase
         $configuredJob->setName('configured_job');
         $configuredJob->setDescription('this is a configured job');
 
-        $config = new ConnectorConfiguration();
-        $config->setSource(new Source(1, "testsource", "/testsource", "MockObject"));
-        $config->setTarget(new Target(1, "testtarget", "/testtarget", "MockObject"));
+        $task = new JobTask();
+        $task->setSource(new Source(1, "testsource", "/testsource", "MockObject"));
+        $task->setTarget(new Target(1, "testtarget", "/testtarget", "MockObject"));
 
-        $configEntity = new ConfigEntity();
-        $configEntity->setConfig($config->serialize());
+        $taskEntity = new TaskEntity();
+        $taskEntity->setConfig($task->serialize());
 
-        $configuredJob->setConfigurations(new ArrayCollection(array($configEntity)));
+        $configuredJob->setTasks(new ArrayCollection(array($taskEntity)));
 
         $this->getTestEntityManager()->persist($configuredJob);
         $this->getTestEntityManager()->flush($configuredJob);
@@ -94,7 +94,7 @@ class JobRepositoryTest extends DoctrineTestCase
         $this->assertInstanceOf('MockObject\Logger', $job->getLogger());
         $this->assertInstanceOf('Ginger\Model\Connector\Connector', $job->getConcector());
         $this->assertTrue($job->getBreakOnFailure());
-        $this->assertInstanceOf('MockObject\Source', $job->getConfigurations()[0]->getSource());
+        $this->assertInstanceOf('MockObject\Source', $job->getTasks()[0]->getSource());
         $this->assertEquals('this is a configured job', $job->getDescription());
     }
 
@@ -107,17 +107,17 @@ class JobRepositoryTest extends DoctrineTestCase
         $job->setDescription('this is a testjob');
         $job->setBreakOnFailure(false);
 
-        $config = new ConnectorConfiguration();
+        $task = new JobTask();
 
         $source = new Source(1, "testsource", "/testsource", "MockObject");
         $source->setOptions(array('foo' => 'bar'));
         $target = new Target(1, "testtarget", "/testtarget", "MockObject");
         $target->setOptions(array('baz' => 'bat'));
 
-        $config->setSource($source);
-        $config->setTarget($target);
+        $task->setSource($source);
+        $task->setTarget($target);
 
-        $job->addConfiguration($config);
+        $job->addTask($task);
 
         $this->object->saveJob($job);
 
@@ -129,8 +129,8 @@ class JobRepositoryTest extends DoctrineTestCase
         $this->assertInstanceOf('MockObject\Logger', $jobCheck->getLogger());
         $this->assertInstanceOf('Ginger\Model\Connector\Connector', $jobCheck->getConcector());
         $this->assertFalse($jobCheck->getBreakOnFailure());
-        $this->assertInstanceOf('MockObject\Source', $jobCheck->getConfigurations()[0]->getSource());
-        $this->assertEquals('bar', $jobCheck->getConfigurations()[0]->getSource()->getOptions()['foo']);
+        $this->assertInstanceOf('MockObject\Source', $jobCheck->getTasks()[0]->getSource());
+        $this->assertEquals('bar', $jobCheck->getTasks()[0]->getSource()->getOptions()['foo']);
         $this->assertEquals('this is a testjob', $jobCheck->getDescription());
     }
 

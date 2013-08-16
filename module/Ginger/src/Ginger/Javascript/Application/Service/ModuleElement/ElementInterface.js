@@ -6,7 +6,7 @@ ModuleElement.ElementInterface.prototype = {
     /**
      * Return a view object, which renders an option form for element specific options
      *
-     * @param {object} elementData Object with elementData (id,name,link,module) and previous set options or empty options if a new config is set
+     * @param {object} elementData Object with elementData (id,name,link,module) and previous set options or empty options if a new task is set
      *
      * @return {Cl.Backbone.View} | null
      */

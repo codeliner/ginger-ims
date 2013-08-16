@@ -3,7 +3,7 @@ namespace Ginger\Rest;
 
 use Cl\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
-use Ginger\Model\Configuration\ConnectorConfiguration;
+use Ginger\Job\Task\JobTask;
 use Ginger\Model\Target\TargetLoaderInterface;
 use Ginger\Model\Target\AbstractTarget;
 
@@ -67,7 +67,7 @@ class TargetsService extends AbstractRestfulController
 
     protected function targetToArray(AbstractTarget $target)
     {
-        $data = ConnectorConfiguration::elementToArray($target);
+        $data = JobTask::elementToArray($target);
 
         //$data['class'] = str_replace('\\', '.', $data['class']);
         $data['data_type'] = $target->getDataType();

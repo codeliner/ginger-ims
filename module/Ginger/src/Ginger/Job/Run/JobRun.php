@@ -19,11 +19,11 @@ class JobRun
     private $success = false;
 
     /**
-     * List of configuration runs indexed by configurationId
+     * List of task runs indexed by taskId
      *
      * @var array
      */
-    private $configurationRuns = array();
+    private $taskRuns = array();
 
     public function __construct($id, $jobName)
     {
@@ -72,16 +72,16 @@ class JobRun
         $this->success = $success;
     }
 
-    public function getConfigurationRuns()
+    public function getTaskRuns()
     {
-        return $this->configurationRuns;
+        return $this->taskRuns;
     }
 
-    public function setConfigurationRuns($configurationRuns)
+    public function setTaskRuns($taskRuns)
     {
-        $this->configurationRuns = $configurationRuns;
+        $this->taskRuns = $taskRuns;
     }
-
+    
     public function getArrayCopy()
     {
         $data = array(
@@ -101,12 +101,12 @@ class JobRun
         } else {
             $data['endTime'] = $this->getEndTime()->format('Y-m-d H:i:s');
         }
-        $configRuns = array();
-        foreach($this->getConfigurationRuns() as $configRun) {
-            $configRuns[] = $configRun->getArrayCopy();
+        $taskRuns = array();
+        foreach($this->getTaskRuns() as $taskRun) {
+            $taskRuns[] = $taskRun->getArrayCopy();
         }
 
-        $data['configurationRuns'] = $configRuns;
+        $data['taskRuns'] = $taskRuns;
 
         return $data;
     }

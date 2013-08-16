@@ -3,7 +3,7 @@ var Jobs = $CL.namespace("Ginger.Jobs");
 $CL.require("Cl.Application.Module.ModuleInterface");
 //controllers
 $CL.require('Ginger.Jobs.Controller.Index');
-$CL.require('Ginger.Jobs.Controller.Configuration');
+$CL.require('Ginger.Jobs.Controller.Task');
 $CL.require('Ginger.Jobs.Controller.Jobrun');
 //views
 $CL.require("Ginger.Jobs.View.Index.Index");
@@ -12,9 +12,9 @@ $CL.require("Ginger.Jobs.View.Index.AddJobForm");
 $CL.require("Ginger.Jobs.View.Index.Edit");
 $CL.require('Ginger.Jobs.View.Index.Partial.EditSidebar');
 $CL.require('Ginger.Jobs.View.Index.Partial.JobSidebar');
-$CL.require("Ginger.Jobs.View.Configuration.Edit");
-$CL.require("Ginger.Jobs.View.Configuration.Sidebar");
-$CL.require("Ginger.Jobs.View.Configuration.Footer");
+$CL.require("Ginger.Jobs.View.Task.Edit");
+$CL.require("Ginger.Jobs.View.Task.Sidebar");
+$CL.require("Ginger.Jobs.View.Task.Footer");
 $CL.require("Ginger.Jobs.View.Jobrun.Show");
 $CL.require('Ginger.Jobs.View.Jobrun.Entry');
 //forms
@@ -286,14 +286,14 @@ Jobs.Module.prototype = {
                             return this.route.replace(':jobname', routeParams.jobname).replace(':id', routeParams.id);
                         }
                     },
-                    'jobs_configuration_add' : {
-                        route : 'jobs/:jobname/config/add/',
+                    'jobs_task_add' : {
+                        route : 'jobs/:jobname/task/add/',
                         callback : function(jobname) {
                             return $CL.makeObj(
                                 "Cl.Application.Router.RouteMatch",
                                 {
                                     module : "Ginger.Jobs.Module",
-                                    controller : "configuration",
+                                    controller : "task",
                                     action : "add",
                                     params : {
                                         jobname : jobname
@@ -305,14 +305,14 @@ Jobs.Module.prototype = {
                             return this.route.replace(':jobname', routeParams.jobname);
                         }
                     },
-                    'jobs_configuration_edit' : {
-                        route : 'jobs/:jobname/config/edit/:id',
+                    'jobs_task_edit' : {
+                        route : 'jobs/:jobname/task/edit/:id',
                         callback : function(jobname, id) {
                             return $CL.makeObj(
                                 "Cl.Application.Router.RouteMatch",
                                 {
                                     module : "Ginger.Jobs.Module",
-                                    controller : "configuration",
+                                    controller : "task",
                                     action : "edit",
                                     params : {
                                         jobname : jobname,
@@ -325,27 +325,27 @@ Jobs.Module.prototype = {
                             return this.route.replace(':jobname', routeParams.jobname).replace(':id', routeParams.id);
                         }
                     },
-                    'jobs_configuration_save' : {
-                        route : 'jobs/:jobname/config/save/',
-                        config : null,
+                    'jobs_task_save' : {
+                        route : 'jobs/:jobname/task/save/',
+                        task : null,
                         customCallback : function() {},
                         callback : function(jobname) {
                             return $CL.makeObj(
                                 "Cl.Application.Router.RouteMatch",
                                 {
                                     module : "Ginger.Jobs.Module",
-                                    controller : "configuration",
+                                    controller : "task",
                                     action : "save",
                                     params : {
                                         jobname : jobname,
-                                        config : this.config,
+                                        task : this.task,
                                         callback : this.customCallback
                                     }
                                 }
                             );
                         },
                         build : function(routeParams) {
-                            this.config = routeParams.config;
+                            this.task = routeParams.task;
                             if ($CL.isDefined(routeParams['callback'])) {
                                 this.customCallback = routeParams.callback;
                             }
@@ -353,15 +353,14 @@ Jobs.Module.prototype = {
                             return this.route.replace(':jobname', routeParams.jobname);
                         }
                     },
-                    'jobs_configuration_remove' : {
-                        route : 'jobs/:jobname/config/remove/:id',
-                        config : null,
+                    'jobs_task_remove' : {
+                        route : 'jobs/:jobname/task/remove/:id',
                         callback : function(jobname, id) {
                             return $CL.makeObj(
                                 "Cl.Application.Router.RouteMatch",
                                 {
                                     module : "Ginger.Jobs.Module",
-                                    controller : "configuration",
+                                    controller : "task",
                                     action : "remove",
                                     params : {
                                         jobname : jobname,
@@ -384,13 +383,13 @@ Jobs.Module.prototype = {
                         c.setJobCollection(sl.get('Ginger.Jobs.Collection.Jobs'));
                         return c;
                     },
-                    'Ginger.Jobs.Controller.Configuration' : function(sl) {
-                        var c = $CL.makeObj('Ginger.Jobs.Controller.Configuration');
+                    'Ginger.Jobs.Controller.Task' : function(sl) {
+                        var c = $CL.makeObj('Ginger.Jobs.Controller.Task');
                         c.setJobCollection(sl.get('Ginger.Jobs.Collection.Jobs'));
                         c.setSourceCollection(sl.get('Ginger.Jobs.Collection.Sources'));
                         c.setTargetCollection(sl.get('Ginger.Jobs.Collection.Targets'));
                         c.setMapperCollection(sl.get('Ginger.Jobs.Collection.Mappers'));
-                        c.setView(sl.get('Ginger.Jobs.View.Configuration.Add'));
+                        c.setView(sl.get('Ginger.Jobs.View.Task.Add'));
                         return c;
                     },
                     'Ginger.Jobs.Controller.Jobrun' : function(sl) {
@@ -433,37 +432,37 @@ Jobs.Module.prototype = {
                         v.setTemplate($CL._template('jobs_job_sidebar'));
                         return v;
                     },
-                    'Ginger.Jobs.View.Configuration.Edit' : function(sl) {
-                        var v = $CL.makeObj('Ginger.Jobs.View.Configuration.Edit');
-                        v.setTemplate($CL._template('jobs_config_edit'));
+                    'Ginger.Jobs.View.Task.Edit' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Jobs.View.Task.Edit');
+                        v.setTemplate($CL._template('jobs_task_edit'));
                         v.setElementLoader(sl.get('module_element_loader'));
-                        var footer = sl.get('Ginger.Jobs.View.Configuration.Footer');
-                        footer.on('save', v.onConfigSave, v);
-                        footer.on('cancel', v.onConfigCancel, v);
+                        var footer = sl.get('Ginger.Jobs.View.Task.Footer');
+                        footer.on('save', v.onTaskSave, v);
+                        footer.on('cancel', v.onTaskCancel, v);
                         footer.on('export', v.onConfigExport, v);
                         footer.on('import', v.onConfigImport, v);
                         v.setFooter(footer);
                         return v;
                     },
-                    'Ginger.Jobs.View.Configuration.Sidebar' : function(sl) {
-                        var v = $CL.makeObj('Ginger.Jobs.View.Configuration.Sidebar');
-                        v.setTemplate($CL._template('jobs_config_sidebar'));
+                    'Ginger.Jobs.View.Task.Sidebar' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Jobs.View.Task.Sidebar');
+                        v.setTemplate($CL._template('jobs_task_sidebar'));
                         v.setElementLoader(sl.get('module_element_loader'));
                         v.setFeatureCollection(sl.get('Ginger.Jobs.Collection.Features'));
-                        var editView = sl.get('Ginger.Jobs.View.Configuration.Edit');
+                        var editView = sl.get('Ginger.Jobs.View.Task.Edit');
                         editView.on('enableFeatures', v.onEnableFeatures, v);
                         editView.on('disableFeatures', v.onDisableFeatures, v);
-                        editView.on('config-save', v.onConfigSave, v);
+                        editView.on('task-save', v.onTaskSave, v);
                         v.setMainEditView(editView);
                         return v;
                     },
-                    'Ginger.Jobs.View.Configuration.Footer' : function(sl) {
-                        var v = $CL.makeObj('Ginger.Jobs.View.Configuration.Footer');
-                        v.setTemplate($CL._template('jobs_config_footer'));
+                    'Ginger.Jobs.View.Task.Footer' : function(sl) {
+                        var v = $CL.makeObj('Ginger.Jobs.View.Task.Footer');
+                        v.setTemplate($CL._template('jobs_task_footer'));
                         return v;
                     },
-                    'Ginger.Jobs.View.Configuration.Add' : function(sl) {
-                        return sl.get('Ginger.Jobs.View.Configuration.Edit');
+                    'Ginger.Jobs.View.Task.Add' : function(sl) {
+                        return sl.get('Ginger.Jobs.View.Task.Edit');
                     },
                     'Ginger.Jobs.View.Jobrun.Show' : function(sl) {
                         var v = $CL.makeObj('Ginger.Jobs.View.Jobrun.Show');

@@ -1,18 +1,18 @@
 <%
-obj.aggregateConfigRuns = function(configRuns) {
+obj.aggregateTaskRuns = function(taskRuns) {
     var totalRuns = 0,
     successfulRuns = 0,
     insertedItems = 0,
     totalItems = 0;
-    _.each(configRuns, function(configRun) {
+    _.each(taskRuns, function(taskRun) {
         totalRuns++;
-        if (configRun.success) {successfulRuns++}
-        insertedItems += configRun.insertedItemCount;
-        totalItems += configRun.totalItemCount;
+        if (taskRun.success) {successfulRuns++}
+        insertedItems += taskRun.insertedItemCount;
+        totalItems += taskRun.totalItemCount;
     });
 
     print(successfulRuns + " / " + totalRuns + " ");
-    print($CL.translate('JOBS::LABEL::SUCCESSFUL_CONFIGURATIONS'));
+    print($CL.translate('JOBS::LABEL::SUCCESSFUL_TASKS'));
     print("&nbsp;&nbsp;|&nbsp;&nbsp;" + insertedItems + " / " + totalItems + " ");
     print($CL.translate('JOBS::LABEL::SUCCESSFUL_ACTIONS'));
 };
@@ -37,7 +37,7 @@ obj.aggregateConfigRuns = function(configRuns) {
 <div class="row-fluid well well-small hide js-jobrun-details">
     <div class="span1"><% if (!obj.hideStart) { %><a href="#" class="js-jobrun-start"><i class="icon-repeat"></i></a><% } %></div>
     <div class="span2"><%= $CL.translate('GENERAL::DURATION') %>:&nbsp;<% print(helpers.duration(startTime, endTime)) %></div>
-    <div class="span8"><% aggregateConfigRuns(configurationRuns) %></div>
+    <div class="span8"><% aggregateTaskRuns(taskRuns) %></div>
     <div class="span1"><% if (!obj.hideRemove) { %><% print($CL._template('application_edit_remove')({hideEdit : true, id : obj.id})) %><% } %></div>
 </div>
 

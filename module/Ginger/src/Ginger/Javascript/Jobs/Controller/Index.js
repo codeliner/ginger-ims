@@ -125,7 +125,7 @@ Controller.Index = $CL.extendClass(Controller.Index, Cl.Application.Mvc.Abstract
                 return view;
             }, this);
 
-            if (job.get('configurations').isEmpty()) {
+            if (job.get('tasks').isEmpty()) {
                 $CL.app().wait();
                 job.fetch({
                     success : $CL.bind(function() {

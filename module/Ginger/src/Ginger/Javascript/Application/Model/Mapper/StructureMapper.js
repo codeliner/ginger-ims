@@ -20,7 +20,7 @@ Mapper.StructureMapper = function() {
 Mapper.StructureMapper.prototype = {
     __IMPLEMENTS__ : [Ginger.Application.Service.ModuleElement.ElementInterface],
     jobname : null,
-    configurationId : null,
+    taskId : null,
     setOptionsView : function(optionsView) {
         this.optionsView = optionsView;
     },
@@ -33,8 +33,8 @@ Mapper.StructureMapper.prototype = {
     setJobname : function(jobname) {
         this.jobname = jobname;
     },
-    setConfigurationId : function(configId) {
-        this.configurationId = configId;
+    setTaskId : function(taskId) {
+        this.taskId = taskId;
     },
     getOptionsView : function(elementData) {
         var sourceId = $('select[name=source]').val();
@@ -46,24 +46,24 @@ Mapper.StructureMapper.prototype = {
         }, 0, true);
 
         //check if we need to fetch source info, this is the case when last source is
-        //not the same as active source or when a jobname and a configurationId is set
+        //not the same as active source or when a jobname and a taskId is set
         if (this.lastSourceId != sourceId
-            || (!_.isNull(this.jobname) && !_.isNull(this.configurationId))) {
+            || (!_.isNull(this.jobname) && !_.isNull(this.taskId))) {
             //cache the active sourceId, maybe we don't need to fetch source info again when
             //getOptionsView() is called
             this.lastSourceId = sourceId;
 
-            //If a jobname and a configruationId is set, we fetch source info with this params
-            //to get data_type and data_structure for the source with config specific options applied to it.
+            //If a jobname and a taskId is set, we fetch source info with this params
+            //to get data_type and data_structure for the source with task specific options applied to it.
             //The specific informations are not applied to the sourceInfo entity, cause this could have
             //unknown side effects
-            if (!_.isNull(this.jobname) && !_.isNull(this.configurationId)) {
+            if (!_.isNull(this.jobname) && !_.isNull(this.taskId)) {
                 queue.addJqXhr(
                     $.get(
                         this.sourceInfoCollection.url
                             + '/' + sourceId
                             + '/' + this.jobname
-                            + '/' + this.configurationId,
+                            + '/' + this.taskId,
                         $CL.bind(function(response) {
                             this.sourceInfoData = response;
                         }, this),
@@ -73,7 +73,7 @@ Mapper.StructureMapper.prototype = {
                     })
                 );
             } else {
-                //No jobname or configurationId provided, so we have to fetch non specific source infos
+                //No jobname or taskId provided, so we have to fetch non specific source infos
                 var sourceInfo = this.sourceInfoCollection.get(sourceId);
 
                 if (!sourceInfo) {
@@ -96,17 +96,17 @@ Mapper.StructureMapper.prototype = {
 
         //same for target info as for source info
         if (this.lastTargetId != targetId
-            || (!_.isNull(this.jobname) && !_.isNull(this.configurationId))) {
+            || (!_.isNull(this.jobname) && !_.isNull(this.taskId))) {
 
             this.lastTargetId = targetId;
 
-            if (!_.isNull(this.jobname) && !_.isNull(this.configurationId)) {
+            if (!_.isNull(this.jobname) && !_.isNull(this.taskId)) {
                 queue.addJqXhr(
                     $.get(
                         this.targetInfoCollection.url
                             + '/' + targetId
                             + '/' + this.jobname
-                            + '/' + this.configurationId,
+                            + '/' + this.taskId,
                         $CL.bind(function(response) {
                             this.targetInfoData = response;
                         }, this),

@@ -1,6 +1,6 @@
 <div class="row-fluid">
     <div class="span12">
-        <h1><%= $CL.translate('HEADLINE::JOBS::CONFIGURATION') %></h1>
+        <h1><%= $CL.translate('HEADLINE::JOBS::TASK') %></h1>
     </div>
 </div>
 <div class="row-fluid margin-bottom15">
@@ -10,7 +10,7 @@
             <div class="row-fluid">
                 <div class="span12">
                     <select name="source" class="no-fluid7">
-                        <option value="none">- <%= $CL.translate('CONFIGURATION::SOURCE::SELECTONE') %> -</option>
+                        <option value="none">- <%= $CL.translate('TASK::SOURCE::SELECTONE') %> -</option>
                         <%  _.each(sources, function(source) { %>
                         <option value="<%- source.id %>"><%- source.module  %>::<%- source.name  %></option>
                         <% }) %>
@@ -32,7 +32,7 @@
             <div class="row-fluid">
                 <div class="span12">
                     <select name="target" disabled="disabled" class="no-fluid7">
-                        <option value="none">- <%= $CL.translate('CONFIGURATION::TARGET::SELECTONE') %> -</option>
+                        <option value="none">- <%= $CL.translate('TASK::TARGET::SELECTONE') %> -</option>
                         <%  _.each(targets, function(target) { %>
                         <option value="<%- target.id %>"><%- target.module  %>::<%- target.name  %></option>
                         <% }) %>

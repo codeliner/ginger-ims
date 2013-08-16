@@ -1,12 +1,12 @@
-var Configuration = $CL.namespace('Ginger.Jobs.View.Configuration');
+var Task = $CL.namespace('Ginger.Jobs.View.Task');
 
 $CL.require('Cl.Backbone.View');
 $CL.require('Cl.Bootstrap.Modal');
 $CL.require('Cl.Popup.Dialog');
 
-Configuration.Footer = function() {};
+Task.Footer = function() {};
 
-Configuration.Footer = $CL.extendClass(Configuration.Footer, Cl.Backbone.View, {
+Task.Footer = $CL.extendClass(Task.Footer, Cl.Backbone.View, {
     saveEnabled : false,
     importModal : null,
     events : {
@@ -60,8 +60,8 @@ Configuration.Footer = $CL.extendClass(Configuration.Footer, Cl.Backbone.View, {
 
         $('#import-response').load($CL.bind(function() {
             this.importModal.close();
-            var config = $.parseJSON($('#import-response').contents().find('body textarea').html());
-            this.trigger('import', config);
+            var task = $.parseJSON($('#import-response').contents().find('body textarea').html());
+            this.trigger('import', task);
         }, this));
     },
     enableSave : function() {

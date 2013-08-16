@@ -42,13 +42,13 @@ class JobRun
     private $job;
 
     /**
-     * @ORM\OneToMany(targetEntity="Ginger\Entity\ConfigurationRun", mappedBy="jobRun", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Ginger\Entity\TaskRun", mappedBy="jobRun", cascade={"persist"}, orphanRemoval=true)
      */
-    private $configurationRuns;
+    private $taskRuns;
 
     public function __construct()
     {
-        $this->configurationRuns = new ArrayCollection();
+        $this->taskRuns = new ArrayCollection();
     }
 
     public function getId()
@@ -101,19 +101,20 @@ class JobRun
         $this->job = $job;
     }
 
-    public function getConfigurationRuns()
+    public function getTaskRuns()
     {
-        return $this->configurationRuns;
+        return $this->taskRuns;
     }
 
-    public function setConfigurationRuns($configurationRuns)
+    public function setTaskRuns($taskRuns)
     {
-        $this->configurationRuns = $configurationRuns;
+        $this->taskRuns = $taskRuns;
     }
 
-    public function addConfigurationRun($configurationRun)
+        
+    public function addTaskRun($taskRun)
     {
-        $configurationRun->setJobRun($this);
-        $this->configurationRuns->add($configurationRun);
+        $taskRun->setJobRun($this);
+        $this->taskRuns->add($taskRun);
     }
 }

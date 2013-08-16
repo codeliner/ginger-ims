@@ -93,7 +93,7 @@ Application.Module.prototype = {
                                     
                     //models
                     //be aware of the missing Application namespace in mapper alias. It's important,
-                    //cause otherwise autoloading of mapper in configuration edit doesn't work.
+                    //cause otherwise autoloading of mapper in task edit doesn't work.
                     'Ginger.Model.Mapper.TableStructureMapper' : function(sl) {
                         //use object creation of serviceManager, so mapper instance will be cached
                         return sl.get('Ginger.Application.Model.Mapper.StructureMapper');

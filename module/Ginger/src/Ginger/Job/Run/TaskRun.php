@@ -1,14 +1,12 @@
 <?php
 namespace Ginger\Job\Run;
-
-use Ginger\Model\Configuration\ConnectorConfiguration;
 /**
- * Description of ConfigurationRun
+ * Description of TaskRun
  *
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  * @copyright (c) 2013, Alexander Miertsch
  */
-class ConfigurationRun
+class TaskRun
 {
     private $id;
 
@@ -20,16 +18,11 @@ class ConfigurationRun
 
     private $success = false;
 
-    private $configurationId;
+    private $taskId;
 
     private $totalItemCount = 0;
 
     private $insertedItemCount = 0;
-
-    /**
-     * @var ConnectorConfiguration
-     */
-    private $configuration;
 
     public function __construct($id)
     {
@@ -87,16 +80,17 @@ class ConfigurationRun
         $this->success = $success;
     }
 
-    public function getConfigurationId()
+    public function getTaskId()
     {
-        return $this->configurationId;
+        return $this->taskId;
     }
 
-    public function setConfigurationId($configId)
+    public function setTaskId($taskId)
     {
-        $this->configurationId = $configId;
+        $this->taskId = $taskId;
     }
 
+    
     public function getTotalItemCount()
     {
         return $this->totalItemCount;
@@ -121,7 +115,7 @@ class ConfigurationRun
     {
         $data = array(
             'id' => $this->getId(),
-            'configurationId' => $this->getConfigurationId(),
+            'taskId' => $this->getTaskId(),
             'totalItemCount' => $this->getTotalItemCount(),
             'insertedItemCount' => $this->getInsertedItemCount(),
             'success' => $this->getSuccess(),

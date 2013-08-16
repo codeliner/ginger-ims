@@ -3,7 +3,7 @@ namespace Ginger\Rest;
 
 use Cl\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
-use Ginger\Model\Configuration\ConnectorConfiguration;
+use Ginger\Job\Task\JobTask;
 use Ginger\Model\Feature\FeatureLoaderInterface;
 use Ginger\Model\Feature\AbstractFeature;
 /**
@@ -64,7 +64,7 @@ class FeaturesService extends AbstractRestfulController
 
     protected function featureToArray(AbstractFeature $feature)
     {
-        $data = ConnectorConfiguration::elementToArray($feature);
+        $data = JobTask::elementToArray($feature);
 
         $data['class'] = str_replace('\\', '.', $data['class']);
         $data['type'] = $feature->getType();

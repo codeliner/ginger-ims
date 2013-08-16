@@ -1,9 +1,9 @@
 var Entity = $CL.namespace('Ginger.Jobs.Entity');
 
 $CL.require('Cl.Backbone.RelationalModel');
-$CL.require("Ginger.Jobs.Entity.Configuration");
+$CL.require("Ginger.Jobs.Entity.Task");
 $CL.require("Ginger.Jobs.Entity.Jobrun");
-$CL.require("Ginger.Jobs.Collection.Configurations");
+$CL.require("Ginger.Jobs.Collection.Tasks");
 $CL.require("Ginger.Jobs.Collection.Jobruns");
 
 Entity.Job = function() {};
@@ -16,9 +16,9 @@ Entity.Job = $CL.extendClass(Entity.Job, Cl.Backbone.RelationalModel, {
     relations : [
         {
             type : 'HasMany',
-            key : 'configurations',
-            relatedModel : Ginger.Jobs.Entity.Configuration,
-            collectionType : Ginger.Jobs.Collection.Configurations,
+            key : 'tasks',
+            relatedModel : Ginger.Jobs.Entity.Task,
+            collectionType : Ginger.Jobs.Collection.Tasks,
             reverseRelation : {
                 key : 'job'
             }
@@ -36,7 +36,7 @@ Entity.Job = $CL.extendClass(Entity.Job, Cl.Backbone.RelationalModel, {
     get : function(key) {
         var value = this.parent.prototype.get.apply(this, arguments);
 
-        if (key == "configurations" || key == "jobruns") {
+        if (key == "tasks" || key == "jobruns") {
             if (value) {
                 value.setJobName(this.get('name'));
             }

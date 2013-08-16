@@ -5,14 +5,14 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\AbstractQuery;
 use Ginger\Job\JobLoaderInterface;
 use Ginger\Job\Job;
+use Ginger\Job\Task\JobTask;
 use Ginger\Model\Connector\Connector;
-use Ginger\Model\Configuration\ConnectorConfiguration;
 use Ginger\Model\Source\SourceLoaderInterface;
 use Ginger\Model\Target\TargetLoaderInterface;
 use Ginger\Model\Mapper\MapperLoaderInterface;
 use Ginger\Model\Feature\FeatureLoaderInterface;
 use Ginger\Entity\Job as JobEntity;
-use Ginger\Entity\Configuration as ConfigurationEntity;
+use Ginger\Entity\Task as TaskEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Ginger\Job\Run\LoggerInterface;
 
@@ -141,35 +141,35 @@ class JobRepository extends EntityRepository implements JobLoaderInterface
     public function saveJob(Job $job)
     {
         $jobEntity = $this->findOneByName($job->getName());
-        $configCollection = new ArrayCollection();
+        $taskCollection = new ArrayCollection();
 
         if ($jobEntity) {
-            $configRepo = $this->getEntityManager()->getRepository('Ginger\Entity\Configuration');
-            $newConfigIds = array();
-            foreach ($job->getConfigurations() as $configuration) {
-                if (is_null($configuration->getId())) {
-                    $configEntity = null;
+            $taskRepo = $this->getEntityManager()->getRepository('Ginger\Entity\Task');
+            $newTaskIds = array();
+            foreach ($job->getTasks() as $task) {
+                if (is_null($task->getId())) {
+                    $taskEntity = null;
                 } else {
-                    $configEntity = $configRepo->find($configuration->getId());
+                    $taskEntity = $taskRepo->find($task->getId());
                 }
 
-                if (is_null($configEntity)) {
-                    $configEntity = new ConfigurationEntity();
+                if (is_null($taskEntity)) {
+                    $taskEntity = new TaskEntity();
                 } else {
-                    $newConfigIds[] = $configuration->getId();
+                    $newTaskIds[] = $task->getId();
                 }
 
-                $configEntity->setJob($jobEntity);
-                $configEntity->setConfig($configuration->serialize());
-                $configCollection->add($configEntity);
+                $taskEntity->setJob($jobEntity);
+                $taskEntity->setConfig($task->serialize());
+                $taskCollection->add($taskEntity);
             }
 
-            $configEntitiesToRemove = $jobEntity->getConfigurations()->filter(function($config) use ($newConfigIds) {
-                return !in_array($config->getId(), $newConfigIds);
+            $taskEntitiesToRemove = $jobEntity->getTasks()->filter(function($task) use ($newTaskIds) {
+                return !in_array($task->getId(), $newTaskIds);
             });
 
-            foreach($configEntitiesToRemove as $removedConfigEntity) {
-                $this->getEntityManager()->remove($removedConfigEntity);
+            foreach($taskEntitiesToRemove as $removedTaskEntity) {
+                $this->getEntityManager()->remove($removedTaskEntity);
             }
 
         } else {
@@ -177,25 +177,25 @@ class JobRepository extends EntityRepository implements JobLoaderInterface
             $jobEntity->setName($job->getName());
             $jobEntity->setDescription($job->getDescription());
 
-            foreach ($job->getConfigurations() as $configuration) {
-                $configEntity = new ConfigurationEntity();
-                $configEntity->setJob($jobEntity);
-                $configEntity->setConfig($configuration->serialize());
-                $configCollection->add($configEntity);
+            foreach ($job->getTasks() as $task) {
+                $taskEntity = new TaskEntity();
+                $taskEntity->setJob($jobEntity);
+                $taskEntity->setConfig($task->serialize());
+                $taskCollection->add($taskEntity);
             }
 
             $this->getEntityManager()->persist($jobEntity);
         }
 
-        $jobEntity->setConfigurations($configCollection);
+        $jobEntity->setTasks($taskCollection);
         $jobEntity->setBreakOnFailure($job->getBreakOnFailure());
         $jobEntity->setDescription($job->getDescription());
 
         $this->getEntityManager()->flush();
 
-        foreach ($job->getConfigurations() as $i => $configuration) {
-            $configEntity = $configCollection[$i];
-            $configuration->setId($configEntity->getId());
+        foreach ($job->getTasks() as $i => $task) {
+            $taskEntity = $taskCollection[$i];
+            $task->setId($taskEntity->getId());
         }
     }
 
@@ -228,20 +228,20 @@ class JobRepository extends EntityRepository implements JobLoaderInterface
         $job->setConcector($this->connector);
         $job->setTranslator($this->translator);
 
-        $configArr = array();
+        $taskArr = array();
 
-        foreach ($jobEntity->getConfigurations() as $configEntity) {
-            $config = new ConnectorConfiguration();
-            $config->setId($configEntity->getId());
-            $config->setSourceLoader($this->sourceLoader);
-            $config->setTargetLoader($this->targetLoader);
-            $config->setMapperLoader($this->mapperLoader);
-            $config->setFeatureLoader($this->featureLoader);
-            $config->unserialize($configEntity->getConfig());
-            $configArr[] = $config;
+        foreach ($jobEntity->getTasks() as $taskEntity) {
+            $task = new JobTask();
+            $task->setId($taskEntity->getId());
+            $task->setSourceLoader($this->sourceLoader);
+            $task->setTargetLoader($this->targetLoader);
+            $task->setMapperLoader($this->mapperLoader);
+            $task->setFeatureLoader($this->featureLoader);
+            $task->unserialize($taskEntity->getConfig());
+            $taskArr[] = $task;
         }
 
-        $job->setConfigurations($configArr);
+        $job->setTasks($taskArr);
         $job->setBreakOnFailure($jobEntity->getBreakOnFailure());
 
         return $job;

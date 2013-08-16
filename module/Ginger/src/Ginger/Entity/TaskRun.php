@@ -4,15 +4,15 @@ namespace Ginger\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 /**
- * Description of ConfigurationRun
+ * Description of TaskRun
  *
  * @ORM\Entity
- * @ORM\Table(name="configuration_run")
+ * @ORM\Table(name="task_run")
  *
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  * @copyright (c) 2013, Alexander Miertsch
  */
-class ConfigurationRun
+class TaskRun
 {
     /**
      * @ORM\Id
@@ -47,24 +47,24 @@ class ConfigurationRun
     private $success = false;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Ginger\Entity\JobRun", cascade={"persist"}, fetch="LAZY", inversedBy="configurations")
+     * @ORM\ManyToOne(targetEntity="Ginger\Entity\JobRun", cascade={"persist"}, fetch="LAZY", inversedBy="tasks")
      * @ORM\JoinColumn(name="job_run_id", referencedColumnName="id")
      */
     private $jobRun;
 
     /**
-     * @ORM\OneToOne(targetEntity="Ginger\Entity\Configuration")
+     * @ORM\OneToOne(targetEntity="Ginger\Entity\Task")
      */
-    private $configuration;
+    private $task;
 
     /**
-     * @ORM\OneToMany(targetEntity="Ginger\Entity\ConfigurationRunMessage", mappedBy="configurationRun", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Ginger\Entity\TaskRunMessage", mappedBy="taskRun", cascade={"persist"}, orphanRemoval=true)
      */
-    private $configurationRunMessages;
+    private $taskRunMessages;
 
     public function __construct()
     {
-        $this->configurationRunMessages = new ArrayCollection();
+        $this->taskRunMessages = new ArrayCollection();
     }
 
     public function getId()
@@ -137,29 +137,29 @@ class ConfigurationRun
         $this->jobRun = $jobRun;
     }
 
-    public function getConfiguration()
+    public function getTask()
     {
-        return $this->configuration;
+        return $this->task;
     }
 
-    public function setConfiguration($configuration)
+    public function setTask($task)
     {
-        $this->configuration = $configuration;
+        $this->task = $task;
     }
 
-    public function getConfigurationRunMessages()
+    public function getTaskRunMessages()
     {
-        return $this->configurationRunMessages;
+        return $this->taskRunMessages;
     }
 
-    public function setConfigurationRunMessages($configurationRunMessages)
+    public function setTaskRunMessages($taskRunMessages)
     {
-        $this->configurationRunMessages = $configurationRunMessages;
+        $this->taskRunMessages = $taskRunMessages;
     }
-
-    public function addConfigurationRunMessage($configurationRunMessage)
+    
+    public function addTaskRunMessage($taskRunMessage)
     {
-        $configurationRunMessage->setConfigurationRun($this);
-        $this->configurationRunMessages->add($configurationRunMessage);
+        $taskRunMessage->setTaskRun($this);
+        $this->taskRunMessages->add($taskRunMessage);
     }
 }

@@ -5,19 +5,19 @@ use Cl\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\JsonModel;
 use Ginger\Job\JobLoaderInterface;
 use Ginger\Job\Job;
-use Ginger\Model\Configuration\ConnectorConfiguration;
+use Ginger\Job\Task\JobTask;
 use Ginger\Model\Source;
 use Ginger\Model\Target;
 use Ginger\Model\Mapper;
 use Ginger\Model\Feature;
 use Zend\Mvc\MvcEvent;
 /**
- * Description of ConfigurationsService
+ * Description of TasksService
  *
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  * @copyright (c) 2013, Alexander Miertsch
  */
-class ConfigurationsService extends AbstractRestfulController
+class TasksService extends AbstractRestfulController
 {
     /**
      *
@@ -106,20 +106,20 @@ class ConfigurationsService extends AbstractRestfulController
 
     public function create($data)
     {
-        $config = new ConnectorConfiguration();
+        $task = new JobTask();
 
         $source = $this->sourceLoader->getSource($data['source']['id']);
         $source->setOptions($data['source']['options']);
-        $config->setSource($source);
+        $task->setSource($source);
 
         $target = $this->targetLoader->getTarget($data['target']['id']);
         $target->setOptions($data['target']['options']);
-        $config->setTarget($target);
+        $task->setTarget($target);
 
         if (isset($data['mapper'])) {
             $mapper = $this->mapperLoader->getMapper($data['mapper']['id']);
             $mapper->setOptions($data['mapper']['options']);
-            $config->setMapper($mapper);
+            $task->setMapper($mapper);
         }
 
         if (isset($data['features'])) {
@@ -129,29 +129,29 @@ class ConfigurationsService extends AbstractRestfulController
                 $feature->setOptions($featureData['options']);
                 $featureCollection[] = $feature;
             }
-            $config->setFeatures($featureCollection);
+            $task->setFeatures($featureCollection);
         }
 
-        $this->job->addConfiguration($config);
+        $this->job->addTask($task);
 
         $this->jobLoader->saveJob($this->job);
 
-        return new JsonModel($config->getArrayCopy());
+        return new JsonModel($task->getArrayCopy());
     }
 
     public function delete($id)
     {
-        $configs = $this->job->getConfigurations();
-        $newConfigs = array();
-        $newConfigIds = array();
-        foreach($configs as $config) {
-            if ($config->getId() != $id) {
-                $newConfigs[] = $config;
-                $newConfigIds[] = $config->getId();
+        $tasks = $this->job->getTasks();
+        $newTasks = array();
+        $newTaskIds = array();
+        foreach($tasks as $task) {
+            if ($task->getId() != $id) {
+                $newTasks[] = $task;
+                $newTaskIds[] = $task->getId();
             }
         }
 
-        $this->job->setConfigurations($newConfigs);
+        $this->job->setTasks($newTasks);
         $this->jobLoader->saveJob($this->job);
 
         return new JsonModel(array('success' => true));
@@ -159,56 +159,56 @@ class ConfigurationsService extends AbstractRestfulController
 
     public function get($id)
     {
-        $configs = $this->job->getConfigurations();
+        $tasks = $this->job->getTasks();
 
-        $configData = array();
+        $taskData = array();
 
-        foreach($configs as $config) {
-            if ($config->getId() == $id) {
-                $configData[] = $config->getArrayCopy();
+        foreach($tasks as $task) {
+            if ($task->getId() == $id) {
+                $taskData[] = $task->getArrayCopy();
                 break;
             }
         }
 
-        if (empty($configData)) {
-            return $this->getResponse()->setStatusCode(404)->setContent('Config can not be found');
+        if (empty($taskData)) {
+            return $this->getResponse()->setStatusCode(404)->setContent('Task can not be found');
         }
 
-        return new JsonModel($configData);
+        return new JsonModel($taskData);
     }
 
     public function getList()
     {
-        $configs = $this->job->getConfigurations();
+        $tasks = $this->job->getTasks();
 
-        $configsData = array();
+        $tasksData = array();
 
-        foreach($configs as $config) {
-            $configsData[] = $config->getArrayCopy();
+        foreach($tasks as $task) {
+            $tasksData[] = $task->getArrayCopy();
         }
 
-        return new JsonModel($configsData);
+        return new JsonModel($tasksData);
     }
 
     public function update($id, $data)
     {
-        $configs = $this->job->getConfigurations();
-        $configFound = false;
-        foreach($configs as $config) {
-            if ($config->getId() == $id) {
-                $configFound = true;
+        $tasks = $this->job->getTasks();
+        $taskFound = false;
+        foreach($tasks as $task) {
+            if ($task->getId() == $id) {
+                $taskFound = true;
                 $source = $this->sourceLoader->getSource($data['source']['id']);
                 $source->setOptions($data['source']['options']);
-                $config->setSource($source);
+                $task->setSource($source);
 
                 $target = $this->targetLoader->getTarget($data['target']['id']);
                 $target->setOptions($data['target']['options']);
-                $config->setTarget($target);
+                $task->setTarget($target);
 
                 if (isset($data['mapper'])) {
                     $mapper = $this->mapperLoader->getMapper($data['mapper']['id']);
                     $mapper->setOptions($data['mapper']['options']);
-                    $config->setMapper($mapper);
+                    $task->setMapper($mapper);
                 }
 
                 if (isset($data['features'])) {
@@ -218,20 +218,20 @@ class ConfigurationsService extends AbstractRestfulController
                         $feature->setOptions($featureData['options']);
                         $featureCollection[] = $feature;
                     }
-                    $config->setFeatures($featureCollection);
+                    $task->setFeatures($featureCollection);
                 }
 
                 $this->jobLoader->saveJob($this->job);
-                $configFound = $config;
+                $taskFound = $task;
                 break;
             }
         }
 
-        if (!$configFound) {
+        if (!$taskFound) {
             return $this->getResponse()->setStatusCode(404);
         }
 
-        return new JsonModel($configFound->getArrayCopy());
+        return new JsonModel($taskFound->getArrayCopy());
     }
 }
 

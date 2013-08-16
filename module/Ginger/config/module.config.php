@@ -122,41 +122,41 @@ return array(
             'rest_sourceinfo' => array(
                 'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
-                    'route'    => '/rest/sourceinfo[/:id[/:jobname[/:configid]]]',
+                    'route'    => '/rest/sourceinfo[/:id[/:jobname[/:taskId]]]',
                     'defaults' => array(
                         'controller' => 'Ginger\Rest\SourceInfo',
                         'jobname' => '-',
-                        'configid' => '-1',
+                        'taskId' => '-1',
                     ),
                     'constraints' => array(
                         'id' => '[a-zA-Z0-9]+',
                         'jobname' => '[a-zA-Z0-9 %_\-]+',
-                        'configid' => '[a-zA-Z0-9]+',
+                        'taskId' => '[a-zA-Z0-9]+',
                     )
                 ),
             ),
             'rest_targetinfo' => array(
                 'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
-                    'route'    => '/rest/targetinfo[/:id[/:jobname[/:configid]]]',
+                    'route'    => '/rest/targetinfo[/:id[/:jobname[/:taskId]]]',
                     'defaults' => array(
                         'controller' => 'Ginger\Rest\TargetInfo',
                         'jobname' => '-',
-                        'configid' => '-1',
+                        'taskId' => '-1',
                     ),
                     'constraints' => array(
                         'id' => '[a-zA-Z0-9]+',
                         'jobname' => '[a-zA-Z0-9 %_\-]+',
-                        'configid' => '[a-zA-Z0-9]+',
+                        'taskId' => '[a-zA-Z0-9]+',
                     )
                 ),
             ),
-            'rest_configurations' => array(
+            'rest_tasks' => array(
                 'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
-                    'route'    => '/rest/configurations/:jobname[/:id]',
+                    'route'    => '/rest/tasks/:jobname[/:id]',
                     'defaults' => array(
-                        'controller' => 'Ginger\Rest\Configurations',
+                        'controller' => 'Ginger\Rest\Tasks',
                     ),
                     'constraints' => array(
                         'jobname' => '[a-zA-Z0-9 %_\-]+',
@@ -321,8 +321,8 @@ return array(
                 $c->setMapperLoader($cl->getServiceLocator()->get('mapper_loader'));
                 return $c;
             },
-            'Ginger\Rest\Configurations' => function($cl) {
-                $c = new \Ginger\Rest\ConfigurationsService();
+            'Ginger\Rest\Tasks' => function($cl) {
+                $c = new \Ginger\Rest\TasksService();
                 $c->setJobLoader($cl->getServiceLocator()->get('job_loader'));
                 $c->setSourceLoader($cl->getServiceLocator()->get('source_loader'));
                 $c->setTargetLoader($cl->getServiceLocator()->get('target_loader'));
@@ -408,9 +408,9 @@ return array(
                 'jobs_job_edit'           => 'ginger/jobs/index/job-edit',
                 'jobs_job_edit_sidebar'   => 'ginger/jobs/index/partial/edit-sidebar',
                 'jobs_job_sidebar'        => 'ginger/jobs/index/partial/job-sidebar',
-                'jobs_config_edit'        => 'ginger/jobs/configuration/edit',
-                'jobs_config_sidebar'     => 'ginger/jobs/configuration/sidebar',
-                'jobs_config_footer'      => 'ginger/jobs/configuration/footer',
+                'jobs_task_edit'        => 'ginger/jobs/task/edit',
+                'jobs_task_sidebar'     => 'ginger/jobs/task/sidebar',
+                'jobs_task_footer'      => 'ginger/jobs/task/footer',
                 'jobs_jobrun_show'        => 'ginger/jobs/jobrun/show',
                 'jobs_jobrun_entry'       => 'ginger/jobs/jobrun/entry',
                 'users_form_user'         => 'ginger/users/form/user',

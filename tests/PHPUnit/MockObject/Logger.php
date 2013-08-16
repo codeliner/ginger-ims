@@ -3,7 +3,7 @@ namespace MockObject;
 
 use Ginger\Job\Run\LoggerInterface;
 use Ginger\Job\Run\JobRun;
-use Ginger\Job\Run\ConfigurationRun;
+use Ginger\Job\Run\TaskRun;
 use Ginger\Job\Run\Message;
 /**
  * Description of Logger
@@ -15,20 +15,20 @@ class Logger implements LoggerInterface
 {
     protected $jobRuns = array();
 
-    protected $configurationRuns = array();
+    protected $taskRuns = array();
 
-    protected $jobConfigMap = array();
+    protected $jobTaskMap = array();
 
     public function getJobRun($jobRunId)
     {
         $jobRun = $this->jobRuns[$jobRunId];
 
-        $configRuns = array();
-        foreach ($this->jobConfigMap[$jobRunId] as $configRunId) {
-            $configRuns[] = $this->configurationRuns[$configRunId];
+        $taskRuns = array();
+        foreach ($this->jobTaskMap[$jobRunId] as $taskRunId) {
+            $taskRuns[] = $this->taskRuns[$taskRunId];
         }
 
-        $jobRun->setConfigurationRuns($configRuns);
+        $jobRun->setTaskRuns($taskRuns);
         return $jobRun;
     }
 
@@ -42,22 +42,22 @@ class Logger implements LoggerInterface
         return $jobRuns;
     }
 
-    public function logMessage($configurationRunId, Message $message)
+    public function logMessage($taskRunId, Message $message)
     {
-        $configRun = $this->configurationRuns[$configurationRunId];
-        $configRun->addMessage($message);
+        $taskRun = $this->taskRuns[$taskRunId];
+        $taskRun->addMessage($message);
     }
 
-    public function startConfigurationRun($jobRunId, $configurationId, $totalItemCount)
+    public function startTaskRun($jobRunId, $taskId, $totalItemCount)
     {
-        $configRunId = count($this->configurationRuns) + 1;
-        $configRun = new ConfigurationRun($configRunId);
-        $configRun->setConfigurationId($configurationId);
-        $configRun->setTotalItemCount($totalItemCount);
-        $configurationRunId = count($this->configurationRuns);
-        $this->configurationRuns[$configurationRunId] = $configRun;
-        $this->jobConfigMap[$jobRunId][] = $configurationRunId;
-        return $configurationRunId;
+        $taskRunId = count($this->taskRuns) + 1;
+        $taskRun = new TaskRun($taskRunId);
+        $taskRun->setTaskId($taskRunId);
+        $taskRun->setTotalItemCount($totalItemCount);
+        $taskRunId = count($this->taskRuns);
+        $this->taskRuns[$taskRunId] = $taskRun;
+        $this->jobTaskMap[$jobRunId][] = $taskRunId;
+        return $taskRunId;
     }
 
     public function startJobRun($jobName)
@@ -65,16 +65,16 @@ class Logger implements LoggerInterface
         $jobRunId = count($this->jobRuns);
         $jobRun = new JobRun($jobRunId, $jobName);
         $this->jobRuns[$jobRunId] = $jobRun;
-        $this->jobConfigMap[$jobRunId] = array();
+        $this->taskRuns[$jobRunId] = array();
         return $jobRunId;
     }
 
-    public function stopConfigurationRun($configurationRunId, $success, $insertedItemsCount)
+    public function stopTaskRun($taskRunId, $success, $insertedItemsCount)
     {
-        $configRun = $this->configurationRuns[$configurationRunId];
-        $configRun->setSuccess($success);
-        $configRun->setInsertedItemCount($insertedItemsCount);
-        $configRun->setEndTime(new \DateTime());
+        $taskRun = $this->taskRuns[$taskRunId];
+        $taskRun->setSuccess($success);
+        $taskRun->setInsertedItemCount($insertedItemsCount);
+        $taskRun->setEndTime(new \DateTime());
     }
 
     public function stopJobRun($jobRunId, $success)

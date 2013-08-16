@@ -1,12 +1,12 @@
-var Configuration = $CL.namespace('Ginger.Jobs.View.Configuration');
+var Task = $CL.namespace('Ginger.Jobs.View.Task');
 
 $CL.require('Cl.Backbone.View');
 $CL.require('Cl.Bootstrap.Modal');
 $CL.require('Cl.Popup.Dialog');
 
-Configuration.Edit = function() {};
+Task.Edit = function() {};
 
-Configuration.Edit = $CL.extendClass(Configuration.Edit, Cl.Backbone.View, {
+Task.Edit = $CL.extendClass(Task.Edit, Cl.Backbone.View, {
     jobName : null,
     elementLoader : null,
     footer : null,
@@ -50,9 +50,9 @@ Configuration.Edit = $CL.extendClass(Configuration.Edit, Cl.Backbone.View, {
         this.parent.prototype.render.apply(this);
         this.reset();
 
-        //if config key is present in data, we are in an edit mode of a previous saved configuration
+        //if task key is present in data, we are in an edit mode of a previous saved task
         //in this case we have to handle saved options
-        if ($CL.isDefined(this.data['config'])) {
+        if ($CL.isDefined(this.data['task'])) {
             this.provideConfigToElements();
         }
 
@@ -93,9 +93,9 @@ Configuration.Edit = $CL.extendClass(Configuration.Edit, Cl.Backbone.View, {
     },
     resetMapperOptions : function() {
         this.canRefreshMapper = true;
-        if ($CL.isDefined(this.data['config']) && $CL.isDefined(this.data.config['mapper'])) {
-            this.data.config.mapper.options = {};
-            var elementData = _.findWhere(this.data.mappers, {name : this.data.config.mapper.name});
+        if ($CL.isDefined(this.data['task']) && $CL.isDefined(this.data.task['mapper'])) {
+            this.data.task.mapper.options = {};
+            var elementData = _.findWhere(this.data.mappers, {name : this.data.task.mapper.name});
             elementData.options = {};
         }
     },
@@ -109,15 +109,15 @@ Configuration.Edit = $CL.extendClass(Configuration.Edit, Cl.Backbone.View, {
     },
     provideConfigToElements : function() {
         //inject saved options in the global collections, to hide the edit mode for other methods
-        this.activeSourceData = _.findWhere(this.data.sources, {id : parseInt(this.data.config.source.id)});
-        this.activeSourceData.options = this.data.config.source.options;
+        this.activeSourceData = _.findWhere(this.data.sources, {id : parseInt(this.data.task.source.id)});
+        this.activeSourceData.options = this.data.task.source.options;
 
-        this.activeTargetData = _.findWhere(this.data.targets, {id : parseInt(this.data.config.target.id)});
-        this.activeTargetData.options = this.data.config.target.options;
+        this.activeTargetData = _.findWhere(this.data.targets, {id : parseInt(this.data.task.target.id)});
+        this.activeTargetData.options = this.data.task.target.options;
 
-        if ($CL.isDefined(this.data.config['mapper'])) {
-            var elementData = _.findWhere(this.data.mappers, {name : this.data.config.mapper.name});
-            elementData.options = this.data.config.mapper.options;
+        if ($CL.isDefined(this.data.task['mapper'])) {
+            var elementData = _.findWhere(this.data.mappers, {name : this.data.task.mapper.name});
+            elementData.options = this.data.task.mapper.options;
         }
     },
     processSourceData : function(elementData) {
@@ -186,7 +186,7 @@ Configuration.Edit = $CL.extendClass(Configuration.Edit, Cl.Backbone.View, {
             this._enableAreas();
         }, this));
     },
-    onConfigSave : function() {
+    onTaskSave : function() {
         var sourceId = $('select[name=source]').val(),
         targetId = $('select[name=target]').val(),
         mapperId = this.activeMapper ? this.activeMapperData.id : null,
@@ -222,7 +222,7 @@ Configuration.Edit = $CL.extendClass(Configuration.Edit, Cl.Backbone.View, {
             mapperOptions = result;
         }
 
-        var configData = {
+        var taskData = {
             source : {
                 id : sourceId,
                 options : sourceOptions
@@ -234,72 +234,72 @@ Configuration.Edit = $CL.extendClass(Configuration.Edit, Cl.Backbone.View, {
         };
 
         if (!_.isNull(mapperId)) {
-            configData['mapper'] = {
+            taskData['mapper'] = {
                 id : mapperId,
                 options : mapperOptions
             };
         }
 
-        if ($CL.isDefined(this.data['config'])) {
-            configData['id'] = this.data.config.id;
+        if ($CL.isDefined(this.data['task'])) {
+            taskData['id'] = this.data.task.id;
         }
 
-        this.trigger('config-save', configData);
+        this.trigger('task-save', taskData);
 
         $CL.app().router.forward(
-            'jobs_configuration_save',
+            'jobs_task_save',
             {
                 jobname : this.jobName,
-                config : configData,
-                callback : $CL.bind(function(configModel){
-                    this.data.config = configModel.toJSON();
+                task : taskData,
+                callback : $CL.bind(function(taskModel){
+                    this.data.task = taskModel.toJSON();
                     this.provideConfigToElements();
                     this.footer.showSavedSuccessful();
                     $CL.app().router.navigate(
-                        helpers.uri('jobs_configuration_edit', {jobname : this.jobName, id : this.data.config.id}),
+                        helpers.uri('jobs_task_edit', {jobname : this.jobName, id : this.data.task.id}),
                         {replace : true}
                     );
-                    this.trigger('config-save-post', this.data.config);
+                    this.trigger('task-save-post', this.data.task);
                 }, this)
             }
         );
     },
-    onConfigCancel : function() {
+    onTaskCancel : function() {
         $CL.app().router.callRoute('jobs_job_edit', {name : this.jobName});
     },
     onConfigExport : function() {
-        if ($CL.isDefined(this.data['config'])) {
-            $CL.setUri('/export/configuration/' + this.jobName + '/' + this.data.config.id);
+        if ($CL.isDefined(this.data['task'])) {
+            $CL.setUri('/export/configuration/' + this.jobName + '/' + this.data.task.id);
         } else {
-            var savePostListener = $CL.bind(function(config) {
-                $CL.setUri('/export/configuration/' + this.jobName + '/' + config.id);
+            var savePostListener = $CL.bind(function(task) {
+                $CL.setUri('/export/configuration/' + this.jobName + '/' + task.id);
             }, this);
 
-            this.on('config-save-post', function(config) {
-                savePostListener(config);
+            this.on('task-save-post', function(task) {
+                savePostListener(task);
                 this.off(savePostListener);
             }, this);
 
-            this.onConfigSave();
+            this.onTaskSave();
         }
 
     },
-    onConfigImport : function(config) {
+    onConfigImport : function(task) {
 
-        if ($CL.isDefined(this.data['config'])) {
-            config['id'] = this.data.config.id;
+        if ($CL.isDefined(this.data['task'])) {
+            task['id'] = this.data.task.id;
         }
 
         $CL.app().router.forward(
-            'jobs_configuration_save',
+            'jobs_task_save',
             {
                 jobname : this.jobName,
-                config : config,
-                callback : $CL.bind(function(configModel){
+                task : task,
+                callback : $CL.bind(function(taskModel){
                     $CL.app().router.navigate('placebo');
                     $CL.app().router.callRoute(
-                        'jobs_configuration_edit',
-                        {jobname : this.jobName, id : configModel.get('id')}
+                        'jobs_task_edit',
+                        {jobname : this.jobName, id : taskModel.get('id')}
                     );
                 }, this)
             }
@@ -490,20 +490,20 @@ Configuration.Edit = $CL.extendClass(Configuration.Edit, Cl.Backbone.View, {
                 this.canRefreshMapper = false;
 
                 //check if we should provide detailed informations to mapper
-                //mapper can use jobname and configId to fetch source and target infos for
-                //the actual configuration, maybe they provide another data_structure, when options
+                //mapper can use jobname and taskId to fetch source and target infos for
+                //the actual task, maybe they provide another data_structure, when options
                 //are set (f.e. the Ginger.Model.File.SourceFile and the Ginger.Model.Directory.SourceDirectory elements)
-                if ($CL.isDefined(this.data['config'])) {
+                if ($CL.isDefined(this.data['task'])) {
                     if ($CL.has(this.activeMapper, "setJobname")) {
-                        this.activeMapper.setJobname(this.data.config.job.name);
+                        this.activeMapper.setJobname(this.data.task.job.name);
                     }
 
-                    if ($CL.has(this.activeMapper, "setConfigurationId")) {
-                        this.activeMapper.setConfigurationId(this.data.config.id);
+                    if ($CL.has(this.activeMapper, "setTaskId")) {
+                        this.activeMapper.setTaskId(this.data.task.id);
                     }
                 } else {
                     this.activeMapper.setJobname(null);
-                    this.activeMapper.setConfigurationId(null);
+                    this.activeMapper.setTaskId(null);
                 }
 
                 this.activeMapperData = elementData;

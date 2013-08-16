@@ -11,11 +11,11 @@ Collection.Jobs = $CL.extendClass(Collection.Jobs, Cl.Backbone.Collection, {
     model : Ginger.Jobs.Entity.Job,
     parse : function(models, options) {
         _.each(models, function(model) {
-            var configs = [].concat(model.configurations),
+            var tasks = [].concat(model.tasks),
             jobruns = [].concat(model.jobruns);
 
-            model.configurations = $CL.makeObj('Ginger.Jobs.Collection.Configurations');
-            model.configurations.set(configs);
+            model.tasks = $CL.makeObj('Ginger.Jobs.Collection.Tasks');
+            model.tasks.set(tasks);
             model.jobruns = $CL.makeObj('Ginger.Jobs.Collection.Jobruns');
             model.jobruns.set(jobruns);
         });

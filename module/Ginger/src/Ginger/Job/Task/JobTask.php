@@ -1,5 +1,5 @@
 <?php
-namespace Ginger\Model\Configuration;
+namespace Ginger\Job\Task;
 
 use Ginger\Model\Connector\AbstractElement;
 use Ginger\Model\Source\AbstractSource;
@@ -7,12 +7,12 @@ use Ginger\Model\Mapper\AbstractMapper;
 use Ginger\Model\Target\AbstractTarget;
 use Ginger\Model\Feature\AbstractFeature;
 /**
- * Description of ConnectorConfiguration
+ * Description of JobTask
  *
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  * @copyright (c) 2013, Alexander Miertsch
  */
-class ConnectorConfiguration
+class JobTask
 {
     protected $id;
     protected $source;

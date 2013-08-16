@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 02. Aug 2013 um 00:26
--- Server Version: 5.5.31
--- PHP-Version: 5.4.17RC1
+-- Erstellungszeit: 16. Aug 2013 um 23:37
+-- Server Version: 5.5.32
+-- PHP-Version: 5.5.1-1~precise+1
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -19,52 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `ginger`
 --
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `configuration`
---
-
-CREATE TABLE IF NOT EXISTS `configuration` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `job_id` int(11) NOT NULL,
-  `config` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `configuration_run`
---
-
-CREATE TABLE IF NOT EXISTS `configuration_run` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `job_run_id` int(11) NOT NULL,
-  `configuration_id` int(11) NOT NULL,
-  `start_time` datetime DEFAULT NULL,
-  `end_time` datetime DEFAULT NULL,
-  `total_item_count` int(11) NOT NULL DEFAULT '0',
-  `inserted_item_count` int(11) NOT NULL DEFAULT '0',
-  `success` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=78 ;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `configuration_run_message`
---
-
-CREATE TABLE IF NOT EXISTS `configuration_run_message` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `configuration_run_id` int(11) NOT NULL,
-  `timestamp` datetime NOT NULL,
-  `type` enum('info','warning','error') NOT NULL,
-  `text` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=81 ;
 
 -- --------------------------------------------------------
 
@@ -145,6 +99,52 @@ CREATE TABLE IF NOT EXISTS `permission` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `task`
+--
+
+CREATE TABLE IF NOT EXISTS `task` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `job_id` int(11) NOT NULL,
+  `config` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `task_run`
+--
+
+CREATE TABLE IF NOT EXISTS `task_run` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `job_run_id` int(11) NOT NULL,
+  `task_id` int(11) NOT NULL,
+  `start_time` datetime DEFAULT NULL,
+  `end_time` datetime DEFAULT NULL,
+  `total_item_count` int(11) NOT NULL DEFAULT '0',
+  `inserted_item_count` int(11) NOT NULL DEFAULT '0',
+  `success` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=78 ;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `task_run_message`
+--
+
+CREATE TABLE IF NOT EXISTS `task_run_message` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_run_id` int(11) NOT NULL,
+  `timestamp` datetime NOT NULL,
+  `type` enum('info','warning','error') NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=81 ;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `user`
 --
 
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `is_admin` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `api_key` (`api_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

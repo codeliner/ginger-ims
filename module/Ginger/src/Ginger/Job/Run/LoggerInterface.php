@@ -28,38 +28,38 @@ interface LoggerInterface
     public function stopJobRun($jobRunId, $success);
 
     /**
-     * Start configuration run and set startTime
+     * Start task run and set startTime
      *
      * @param string  $jobRunId        Identifier of the Job
-     * @param integer $configurationId Identifier of the configuration
+     * @param integer $taskId Identifier of the task
      * @param integer $totalItemCount Total count of items, which should be inserted
      *
-     * @return integer Configuration run Id
+     * @return integer task run Id
      *
      * @throws Exception\JobNotStartedException if method is called befor {@method startJobRun} is called
      */
-    public function startConfigurationRun($jobRunId, $configurationId, $totalItemCount);
+    public function startTaskRun($jobRunId, $taskId, $totalItemCount);
 
     /**
      * Log a message
      *
-     * @param integer $configurationRunId Identifier of the configuarion run
+     * @param integer $taskRunId Identifier of the task run
      * @param Message $message            A run message
      *
      * @return void
      */
-    public function logMessage($configurationRunId, Message $message);
+    public function logMessage($taskRunId, Message $message);
 
     /**
-     * Stop the active configuration run and set stopTime
+     * Stop the active task run and set stopTime
      *
-     * @param integer $configurationRunId Identifier of the configuarion run
-     * @param boolean $success Status of the configuration run
+     * @param integer $taskRunId Identifier of the task run
+     * @param boolean $success Status of the task run
      * @param integer $insertedItemsCount Count of the inserted items
      *
      * @return void
      */
-    public function stopConfigurationRun($configurationRunId, $success, $insertedItemsCount);
+    public function stopTaskRun($taskRunId, $success, $insertedItemsCount);
 
     /**
      * Get a JobRun

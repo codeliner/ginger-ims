@@ -3,15 +3,15 @@ namespace Ginger\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 /**
- * Description of Configuration
+ * Description of Task
  *
  * @ORM\Entity
- * @ORM\Table(name="configuration")
+ * @ORM\Table(name="task")
  *
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  * @copyright (c) 2013, Alexander Miertsch
  */
-class Configuration
+class Task
 {
     /**
      * @ORM\Id

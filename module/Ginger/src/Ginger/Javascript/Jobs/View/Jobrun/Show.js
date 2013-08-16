@@ -81,9 +81,9 @@ Jobrun.Show = $CL.extendClass(Jobrun.Show, Cl.Backbone.View, {
     },
     _prepareLog : function() {
         var jobrun = this.data,
-        nonSuccessfulConfigrun = false,
+        nonSuccessfulTaskrun = false,
         statusWord,
-        configEndMsg,
+        taskEndMsg,
         totalItems = 0,
         insertedItems = 0;
 
@@ -91,19 +91,19 @@ Jobrun.Show = $CL.extendClass(Jobrun.Show, Cl.Backbone.View, {
 
         this._addLogMsg('success', helpers.time(jobrun.startTime), $CL.translate('JOBS::JOBRUN::STARTED').replace(':jobname', jobrun.jobname));
 
-        $.each(jobrun.configurationRuns, $CL.bind(function(i, configRun) {
+        $.each(jobrun.taskRuns, $CL.bind(function(i, taskRun) {
 
-            var configuration = _.find(this.data.configurations, function(config) {
-                return config.id == configRun.configurationId;
+            var task = _.find(this.data.tasks, function(task) {
+                return task.id == taskRun.taskId;
             });
 
-            if (nonSuccessfulConfigrun) {
-                this._addLogMsg('warning', helpers.time(configRun.startTime), $CL.translate('JOBS::JOBRUN::CONTINUE_AFTER_FAILURE'));
+            if (nonSuccessfulTaskrun) {
+                this._addLogMsg('warning', helpers.time(taskRun.startTime), $CL.translate('JOBS::JOBRUN::CONTINUE_AFTER_FAILURE'));
             }
 
-            this._addLogMsg('success', helpers.time(configRun.startTime), $CL.translate('JOBS::JOBRUN::CONFIG::STARTED').replace(':number', i+1));
+            this._addLogMsg('success', helpers.time(taskRun.startTime), $CL.translate('JOBS::JOBRUN::TASK::STARTED').replace(':number', i+1));
 
-            _.each(configRun.messages, function(message) {
+            _.each(taskRun.messages, function(message) {
                 this._addLogMsg(
                     (message.type == "info")? 'success' : message.type,
                     helpers.time(message.timestamp),
@@ -111,40 +111,40 @@ Jobrun.Show = $CL.extendClass(Jobrun.Show, Cl.Backbone.View, {
                 );
             }, this);
 
-            if (!configRun.endTime) {
+            if (!taskRun.endTime) {
                 return;
             }
 
-            statusWord = (configRun.success)?
+            statusWord = (taskRun.success)?
                 $CL.translate('GENERAL::SUCCESSFUL') :
                 $CL.translate('GENERAL::ERRORFUL');
 
-            configEndMsg = $CL.translate('JOBS::JOBRUN::CONFIG::END')
+            taskEndMsg = $CL.translate('JOBS::JOBRUN::TASK::END')
                 .replace(':number', i+1)
                 .replace(':status', statusWord);
 
-            if (configRun.totalItemCount > 0) {
-                configEndMsg += ' ' + $CL.translate('JOBS::JOBRUN::CONFIG::END_ITEMS')
-                    .replace(':totalItems', configRun.totalItemCount)
-                    .replace(':insertedItems', configRun.insertedItemCount)
+            if (taskRun.totalItemCount > 0) {
+                taskEndMsg += ' ' + $CL.translate('JOBS::JOBRUN::TASK::END_ITEMS')
+                    .replace(':totalItems', taskRun.totalItemCount)
+                    .replace(':insertedItems', taskRun.insertedItemCount)
                     .replace(':pluralItemName', $CL.translatePlural(
-                        'CONFIGURATION::ITEM_NAME::' + configuration.source.itemName, 2))
+                        'TASK::ITEM_NAME::' + task.source.itemName, 2))
                     .replace(':pastAction', $CL.translate(
-                        'CONFIGURATION::TARGET_ACTION_PAST::' + configuration.target.action)
+                        'TASK::TARGET_ACTION_PAST::' + task.target.action)
                     );
             }
 
             this._addLogMsg(
-                (configRun.success)? 'success' : 'error',
-                helpers.time(configRun.endTime),
-                configEndMsg
+                (taskRun.success)? 'success' : 'error',
+                helpers.time(taskRun.endTime),
+                taskEndMsg
             );
 
-            totalItems += configRun.totalItemCount;
-            insertedItems += configRun.insertedItemCount;
+            totalItems += taskRun.totalItemCount;
+            insertedItems += taskRun.insertedItemCount;
 
-            if (!configRun.success) {
-                nonSuccessfulConfigrun = true;
+            if (!taskRun.success) {
+                nonSuccessfulTaskrun = true;
             }
         },this));
 

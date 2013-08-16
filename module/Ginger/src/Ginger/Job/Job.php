@@ -3,7 +3,7 @@ namespace Ginger\Job;
 
 use Ginger\Job\Run\LoggerInterface;
 use Ginger\Job\Run\Message;
-use Ginger\Model\Configuration\ConnectorConfiguration;
+use Ginger\Job\Task\JobTask;
 use Ginger\Model\Connector\Connector;
 use Zend\I18n\Translator\Translator;
 use Zend\Permissions\Acl\Resource\ResourceInterface;
@@ -31,7 +31,11 @@ class Job implements ResourceInterface
      */
     protected $translator;
 
-    protected $configurations = array();
+    /**
+     *
+     * @var array JobTask[]
+     */
+    protected $tasks = array();
 
     protected $breakOnFailure = true;
 
@@ -91,19 +95,19 @@ class Job implements ResourceInterface
         $this->translator = $translator;
     }
 
-    public function getConfigurations()
+    public function getTasks()
     {
-        return $this->configurations;
+        return $this->tasks;
     }
 
-    public function setConfigurations($configurations)
+    public function setTasks($tasks)
     {
-        $this->configurations = $configurations;
+        $this->tasks = $tasks;
     }
 
-    public function addConfiguration(ConnectorConfiguration $config)
+    public function addTask(JobTask $task)
     {
-        $this->configurations[] = $config;
+        $this->tasks[] = $task;
     }
 
     public function getBreakOnFailure()
@@ -122,7 +126,7 @@ class Job implements ResourceInterface
             'name' => $this->getName(),
             'description' => $this->getDescription(),
             'break_on_failure' => $this->getBreakOnFailure(),
-            'configurations' => array(),
+            'tasks' => array(),
             'jobruns' => array(),
             'jobrun_count' => null,
             'jobrun_count_success' => null,
@@ -130,9 +134,9 @@ class Job implements ResourceInterface
         );
 
         if ($withRelations) {
-            foreach ($this->configurations as $config) {
-                /* @var $config ConnectorConfiguration */
-                $copy['configurations'][] = $config->getArrayCopy();
+            foreach ($this->tasks as $task) {
+                /* @var $task JobTask */
+                $copy['tasks'][] = $task->getArrayCopy();
             }
 
             $jobruns = $this->logger->getJobRuns($this->getName(), $maxRuns, $skipRuns);
@@ -176,41 +180,41 @@ class Job implements ResourceInterface
         //We assume that the jobrun will be successful
         $success = true;
 
-        foreach ($this->configurations as $config) {
+        foreach ($this->tasks as $task) {
 
-            $configItemCount = 0;
+            $taskItemCount = 0;
             
-            //We reset the job success flag on every configuration run
+            //We reset the job success flag on every task run
             //If there was an error befor, than the job is configured to continue
-            //the process and as long as the last configuration run is successful
+            //the process and as long as the last task run is successful
             //the hole jobrun is treated as successful
             $success = true;
 
             try {
-                $configItemCount = $config->getSource()->getItemCount();
+                $taskItemCount = $task->getSource()->getItemCount();
 
-                $configRunId = $this->logger->startConfigurationRun(
+                $taskRunId = $this->logger->startTaskRun(
                     $jobRunId,
-                    $config->getId(),
-                    $configItemCount
+                    $task->getId(),
+                    $taskItemCount
                     );
             } catch (\Exception $e) {
                 error_log($e->__toString());
                 
                 //The source cann't return the number of items
-                //so we start the configuration run but with an item count of zero
-                $configRunId = $this->logger->startConfigurationRun(
+                //so we start the task run but with an item count of zero
+                $taskRunId = $this->logger->startTaskRun(
                     $jobRunId,
-                    $config->getId(),
+                    $task->getId(),
                     0
                     );
 
-                //Log the exception as an error message of the configuration run
+                //Log the exception as an error message of the task run
                 $this->log(
-                    $configRunId,
+                    $taskRunId,
                     sprintf(
-                        $this->translator->translate('JOBS::JOBRUN::ERROR::START_CONFIGURATION'),
-                        $config->getId(),
+                        $this->translator->translate('JOBS::JOBRUN::ERROR::START_TASK'),
+                        $task->getId(),
                         $e->__toString()
                         ),
                     Message::TYPE_ERROR);
@@ -221,67 +225,67 @@ class Job implements ResourceInterface
                     'count' => 0
                 );
 
-                //Jumb over the hole process and stop the configuration run directly
-                goto STOP_CONFIGRUN;
+                //Jumb over the hole process and stop the task run directly
+                goto STOP_TASKRUN;
             }
 
             //Every connector element must implement \Zend\EventManager\ListenerAggregateInterface
             //to get the possibility to register on a connector event
-            foreach ($config->getFeatures() as $feature) {
+            foreach ($task->getFeatures() as $feature) {
                 $feature->attach($this->connector->getEventManager());
             }
 
             //Trigger the data transfer from source to target
             //The transfer is managed by the connector
             $response = $this->connector->insert(
-                $config->getSource(),
-                $config->getTarget(),
-                $config->getMapper()
+                $task->getSource(),
+                $task->getTarget(),
+                $task->getMapper()
                 );
 
             //The transfer is done, so let the features stop listining 
             //on connector events
-            foreach ($config->getFeatures() as $feature) {
+            foreach ($task->getFeatures() as $feature) {
                 $feature->detach($this->connector->getEventManager());
             }
 
             //Log all messages of the data transfer
-            $this->log($configRunId, $response['messages']);
+            $this->log($taskRunId, $response['messages']);
 
 
-            STOP_CONFIGRUN:
+            STOP_TASKRUN:
                 $insertedItemCount = $response['count'];
 
                 //If the source hasn't provided an item count, 
                 //we also log no result count (unknown items mode)
-                if ($configItemCount == 0) {
+                if ($taskItemCount == 0) {
                     $insertedItemCount = 0;
                 }
 
-                //Wasn't the configuration run successful and we should stop the job?
+                //Wasn't the task run successful and we should stop the job?
                 if (!$response['success'] && $this->breakOnFailure) {
                     //then log a appropriate message
                     $this->log(
-                        $configRunId,
+                        $taskRunId,
                         $this->translator->translate('JOBS::JOBRUN::ERROR::JOB_ABORTED'),
                         Message::TYPE_ERROR
                         );
-                    //stop the active configuration run
-                    $this->logger->stopConfigurationRun($configRunId, $response['success'], $insertedItemCount);
+                    //stop the active task run
+                    $this->logger->stopTaskRun($taskRunId, $response['success'], $insertedItemCount);
                     //set the jobrun success flag to false
                     $success = false;
                     
-                    //and exit the configuration run loop 
+                    //and exit the task run loop 
                     break;
                 }
 
-                //The last configuration run is the crucial factor 
+                //The last task run is the crucial factor 
                 //for the job success flag
                 if (!$response['success']) {
                     $success = false;
                 }
 
-                $this->logger->stopConfigurationRun($configRunId, $response['success'], $insertedItemCount);
+                $this->logger->stopTaskRun($taskRunId, $response['success'], $insertedItemCount);
         }
 
         STOP_JOBRUN:
@@ -290,7 +294,7 @@ class Job implements ResourceInterface
             return $success;
     }
 
-    protected function log($configRunId, $messageOrResponse, $type = null)
+    protected function log($taskRunId, $messageOrResponse, $type = null)
     {
         if (is_string($messageOrResponse)) {
             if (is_null($type)) {
@@ -299,10 +303,10 @@ class Job implements ResourceInterface
             $message = new Message($type);
             $message->setText($messageOrResponse);
 
-            $this->logger->logMessage($configRunId, $message);
+            $this->logger->logMessage($taskRunId, $message);
         } else if (is_array($messageOrResponse)) {
             foreach ($messageOrResponse as $message) {
-                $this->logger->logMessage($configRunId, $message);
+                $this->logger->logMessage($taskRunId, $message);
             }
         }
     }

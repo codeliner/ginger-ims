@@ -37,9 +37,9 @@ class Job
     private $breakOnFailure = true;
 
     /**
-     * @ORM\OneToMany(targetEntity="Ginger\Entity\Configuration", mappedBy="job", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Ginger\Entity\Task", mappedBy="job", cascade={"all"}, orphanRemoval=true)
      */
-    private $configurations;
+    private $tasks;
 
     /**
      * @ORM\OneToMany(targetEntity="Ginger\Entity\JobRun", mappedBy="job", cascade={"persist"}, orphanRemoval=true)
@@ -49,7 +49,7 @@ class Job
 
     public function __construct()
     {
-        $this->configurations = new ArrayCollection();
+        $this->tasks = new ArrayCollection();
         $this->jobRuns = new ArrayCollection();
     }
 
@@ -94,14 +94,14 @@ class Job
     }
 
 
-    public function getConfigurations()
+    public function getTasks()
     {
-        return $this->configurations;
+        return $this->tasks;
     }
 
-    public function setConfigurations($configurations)
+    public function setTasks($tasks)
     {
-        $this->configurations = $configurations;
+        $this->tasks = $tasks;
     }
 
     public function getJobRuns()

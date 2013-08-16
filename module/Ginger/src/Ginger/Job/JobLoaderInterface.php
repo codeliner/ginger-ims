@@ -18,10 +18,10 @@ interface JobLoaderInterface
     public function loadJob($name);
 
     /**
-     * Save a job with it's configurations
+     * Save a job with it's tasks
      *
-     * Set the generated configuration ids on the provided instances
-     * Remove Configurations, that are no longer connected with the job
+     * Set the generated task ids on the provided instances
+     * Remove tasks, that are no longer connected with the job
      *
      * @param Job $job
      */
