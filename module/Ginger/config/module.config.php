@@ -208,17 +208,7 @@ return array(
         ),
         'factories' => array(
             'translator' => 'Cl\Translator\TranslatorServiceFactory',
-            'js_translation_parser' => 'Codelinerjs\Javascript\TranslationParser\ParserFactory',
-            'job_loader' => 'Ginger\Service\JobLoader\OrmLoaderFactory',
-            'jobrun_logger' => 'Ginger\Service\Logger\OrmLoggerFactory',
-            'element_loader' => function($sl) {
-                return $sl->get('entitymanager')->getRepository('Ginger\Entity\ConnectorElement');
-            },
-            'module_loader' => function($sl) {
-                return $sl->get('entitymanager')->getRepository('Ginger\Entity\ModuleConfiguration');
-            },
-            'user_loader' => 'Ginger\Service\UserLoader\OrmUserLoaderFactory',
-            'permissions_loader' => 'Ginger\Service\PermissionsLoader\OrmPermissionsLoaderFactory',
+            'js_translation_parser' => 'Codelinerjs\Javascript\TranslationParser\ParserFactory',            
             'usermanager' => function($sl) {
                 $usermanager = new \Ginger\Model\User\UserManager();
                 $usermanager->setUserLoader($sl->get('user_loader'));
@@ -256,12 +246,6 @@ return array(
 
                 return $fP;
             },
-        ),
-        'aliases' => array(
-            'source_loader'  => 'element_loader',
-            'target_loader'  => 'element_loader',
-            'mapper_loader'  => 'element_loader',
-            'feature_loader' => 'element_loader',
         ),
     ),
     'controllers' => array(
@@ -435,22 +419,6 @@ return array(
         'template_path_stack' => array(
             __DIR__ . '/../view',
         ),
-    ),
-    'doctrine' => array(
-        'driver' => array(
-            'ginger_module_driver' => array(
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'cache' => 'array',
-                'paths' => array(
-                    __DIR__ . '/../src/Ginger/Entity'
-                )
-            ),
-            'orm_default' => array(
-                'drivers' => array(
-                    'Ginger' => 'ginger_module_driver',
-                )
-            )
-        )
     ),
     'connect_modules' => array(
         /*

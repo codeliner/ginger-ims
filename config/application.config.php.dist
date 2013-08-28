@@ -3,6 +3,7 @@ return array(
     'modules' => array(
         'DoctrineModule',
         'DoctrineORMModule',
+        'GingerORM',
         'Css',
         'Cl',
         'Codelinerjs',
